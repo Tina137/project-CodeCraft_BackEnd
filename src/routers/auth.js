@@ -1,7 +1,13 @@
-import { Router } from 'express';
-import { ctrlWrapper } from '../utils/ctrlWrapper.js';
-import { validateBody } from '../middlewares/validateBody.js';
 
-const router = Router();
+import express from 'express';
+import * as ctrl from '../controllers/auth.js'; 
+
+
+
+import { validateBody, registerSchema } from '../validation/auth.js';
+
+const router = express.Router();
+
+router.post('/register', validateBody(registerSchema), ctrl.register);
 
 export default router;
