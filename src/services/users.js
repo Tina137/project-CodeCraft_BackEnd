@@ -10,3 +10,16 @@ export const updateUserInfo = async (userId, payload) => {
 
   return userUpdate;
 }
+
+// функція для оновлення аватару
+export const updateUserAvatar = async (userId, filename) => {
+  const avatarPath = `/uploads/avatars/${filename}`;
+
+  const updatedUser = await UsersCollection.findByIdAndUpdate(
+    userId,
+    { avatarUrl: avatarPath },
+    { new: true }
+  );
+
+  return updatedUser;
+};
