@@ -1,0 +1,50 @@
+tags:
+  - Auth
+summary: User login
+operationId: loginUser
+description: Authenticate a user and return a JWT token.
+security:
+  - bearerAuth: []
+requestBody:
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - email
+          - password
+        properties:
+          email:
+            type: string
+            description: The user's email address.
+            example: 1234@gmail.com
+          password:
+            type: string
+            description: The user's password.
+            example: strongpassword123
+responses:
+  200:
+    description: Successfully logged in!
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              description: HTTP status code.
+              example: 200
+            message:
+              type: string
+              description: Success message.
+              example: Successfully logged in!
+            data:
+              type: string
+              description: JWT token for authenticated requests.
+              example: accessToken DkaGVIWAQeo5/2blc96pd3lqAggNPzOyiTdlHViz
+  401:
+    $ref: ../../../components/responses/401.yaml
