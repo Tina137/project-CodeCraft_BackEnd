@@ -15,3 +15,16 @@ export const register = async (req, res) => {
     res.status(HTTP_STATUS.SERVER_ERROR).json({ message: error.message });
   }
 };
+export const logout = async (req, res, next) => {
+  try {
+  
+    const authHeader = req.get('Authorization');
+    const token = authHeader.split(' ')[1];
+
+    await authService.logout(token);
+    
+    res.sendStatus(HTTP_STATUS.NO_CONTENT); 
+  } catch (error) {
+    next(error);
+  }
+};
