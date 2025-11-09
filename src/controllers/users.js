@@ -32,3 +32,20 @@ export const updateUserInfoController = async (req, res, next) => {
     data: user,
   });
 }
+
+export const updateAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const updatedUser = await updateUserAvatar(req.user._id, req.file.filename);
+
+    res.json({
+      message: "Avatar updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
