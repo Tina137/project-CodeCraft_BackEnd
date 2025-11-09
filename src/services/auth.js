@@ -1,4 +1,3 @@
-
 import bcrypt from 'bcrypt';
 import createHttpError from 'http-errors'; 
 import jwt from 'jsonwebtoken';
@@ -7,6 +6,7 @@ import crypto from 'crypto';
 import { UsersCollection } from '../db/models/user.js';
 import { SessionsCollection } from '../db/models/session.js'; 
 import { FIFTEEN_MINUTES, ONE_DAY, HTTP_STATUS } from '../constants/index.js'; 
+
 
 const { JWT_SECRET } = process.env;
 
@@ -32,11 +32,11 @@ export const register = async (body) => {
     userId: newUser._id,
     accessToken: accessToken,
     refreshToken: refreshToken,
-    accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
+   accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
     refreshTokenValidUntil: new Date(Date.now() + ONE_DAY * 7),
   });
 
-  
+ 
   return {
     accessToken,
     refreshToken,
@@ -69,3 +69,8 @@ export async function loginUser(email, password) {
   return session;
 }
 ///////////////////////////////////////////////////////////////////////////////
+
+export const logout = async (accessToken) => {
+ 
+  await SessionsCollection.deleteOne({ accessToken: accessToken });
+};
