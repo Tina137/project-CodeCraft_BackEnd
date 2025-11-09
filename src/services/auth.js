@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import createHttpError from 'http-errors'; 
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 
 import { UsersCollection } from '../db/models/user.js';
 import { SessionsCollection } from '../db/models/session.js'; 
@@ -42,6 +43,32 @@ export const register = async (body) => {
     user: newUser,   };
 };
 
+///////////////////////////////////////////////////////////////////////////////
+export async function loginUser(email, password) {
+  const user = await UsersCollection.findOne({ email });
+  if (!user) {
+    throw createHttpError(401, 'Invalid email or password');
+  }
+  const isPasswordValid = await user.comparePassword(password);
+  if (!isPasswordValid) {
+    throw createHttpError(401, 'Invalid email or password');
+  }
+  const accessToken = crypto.randomBytes(32).toString('base64');
+  const refreshToken = crypto.randomBytes(32).toString('base64');
+  const accessTokenValidUntil = new Date(Date.now() + FIFTEEN_MINUTES);
+  const refreshTokenValidUntil = new Date(Date.now() + ONE_DAY * 7);
+
+  const session = await SessionsCollection.create({
+    userId: user._id,
+    accessToken,
+    accessTokenValidUntil,
+    refreshToken,
+    refreshTokenValidUntil,
+  });
+
+  return session;
+}
+///////////////////////////////////////////////////////////////////////////////
 
 export const logout = async (accessToken) => {
  
