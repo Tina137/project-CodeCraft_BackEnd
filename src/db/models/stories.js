@@ -10,19 +10,27 @@ const storySchema = new Schema(
     },
     article: {
       type: String,
+      required: true,
     },
     category: {
       type: Schema.Types.ObjectId,
-      ref: 'category',
+      ref: 'categories',
+      required: true,
     },
     ownerId: {
       type: Schema.Types.ObjectId,
       ref: 'users',
+      required: true,
     },
     favoriteCount: {
       type: Number,
       required: true,
       default: 0,
+    },
+    date: {
+      type: Date,
+      default: Date.now,
+      required: true,
     },
   },
   {
