@@ -1,13 +1,5 @@
 import { FIFTEEN_MINUTES, ONE_DAY } from '../constants/index.js';
-import {
-  registerUser,
-  loginUser,
-  logoutUser,
-  refreshUsersSession,
-  requestResetToken,
-  resetPassword,
-  createSession,
-} from '../services/auth.js';
+import * as authService from '../services/auth.js';
 import { HTTP_STATUS } from '../constants/index.js';
 import { SessionsCollection } from '../db/models/session.js';
 
@@ -27,9 +19,9 @@ const setupSession = (res, session) => {
 
 export const registerUserController = async (req, res, next) => {
   try {
-    const user = await registerUser(req.body);
+    const user = await authService.registerUser(req.body);
 
-    const newSession = await createSession(user._id);
+    const newSession = await authService.createSession(user._id);
     setupSession(res, newSession);
 
     res.status(HTTP_STATUS.CREATED).json(user);
@@ -40,11 +32,11 @@ export const registerUserController = async (req, res, next) => {
 
 export const loginUserController = async (req, res, next) => {
   try {
-    const user = await loginUser(req.body);
+    const user = await authService.loginUser(req.body);
 
     await SessionsCollection.deleteMany({ userId: user._id });
 
-    const newSession = await createSession(user._id);
+    const newSession = await authService.createSession(user._id);
     setupSession(res, newSession);
 
     res.status(HTTP_STATUS.OK).json(user);
@@ -57,7 +49,7 @@ export const logoutUserController = async (req, res, next) => {
   try {
     const cookieOptions = { path: '/', secure: process.env.NODE_ENV === 'production', sameSite: 'strict' };
     if (req.cookies && req.cookies.sessionId) {
-      await logoutUser(req.cookies.sessionId);
+      await authService.logoutUser(req.cookies.sessionId);
     }
 
     res.clearCookie('accessToken', cookieOptions);
@@ -81,7 +73,7 @@ export const refreshUserSessionController = async (req, res, next) => {
       throw err;
     }
 
-    const session = await refreshUsersSession({
+    const session = await authService.refreshUsersSession({
       sessionId,
       refreshToken,
     });
@@ -99,7 +91,7 @@ export const refreshUserSessionController = async (req, res, next) => {
 
 export const requestResetEmailController = async (req, res, next) => {
   try {
-    await requestResetToken(req.body.email);
+    await authService.requestResetToken(req.body.email);
     res.json({
       message: 'Reset password email was successfully sent!',
       status: 200,
@@ -112,7 +104,7 @@ export const requestResetEmailController = async (req, res, next) => {
 
 export const resetPasswordController = async (req, res, next) => {
   try {
-    await resetPassword(req.body);
+    await authService.resetPassword(req.body);
     res.json({
       message: 'Password was successfully reset!',
       status: 200,
