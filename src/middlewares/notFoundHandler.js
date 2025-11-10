@@ -1,6 +1,5 @@
-import pkg from 'http-errors';
-const { createError } = pkg;
+import { HTTP_STATUS } from '../constants/index.js';
 
-export function notFoundHandler(req, res, next) {
-  next(createError(404, 'Route not found'));
-}
+export const notFoundHandler = (req, res, next) => {
+  res.status(HTTP_STATUS.NOT_FOUND).json({ message: 'Route not found' });
+};
