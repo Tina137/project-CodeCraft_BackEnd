@@ -9,19 +9,16 @@ export const registerSchema = Joi.object({
   password: Joi.string().min(6).required(),
 });
 
-
-export const validateBody = (schema) => {
-  return (req, res, next) => {
-    const { error } = schema.validate(req.body);
-    
-    if (error) {
-      return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: error.details[0].message });
-    }
-    next();
-  };
-};
-
 export const loginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
+});
+
+export const requestResetEmailSchema = Joi.object({
+  email: Joi.string().email().required(),
+});
+
+export const resetPasswordSchema = Joi.object({
+  password: Joi.string().required(),
+  token: Joi.string().required(),
 });
