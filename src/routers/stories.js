@@ -6,6 +6,7 @@ import {
   createStoryController,
   getStoryByIdController,
   updateStoryController,
+  getStoriesController,
 } from '../controllers/stories.js';
 
 import { validateBody } from '../middlewares/validateBody.js';
@@ -14,6 +15,8 @@ import { authenticate } from '../middlewares/authenticate.js';
 import { upload } from '../middlewares/multer.js';
 
 const router = express.Router();
+
+router.get('/', ctrlWrapper(getStoriesController));
 
 router.use(authenticate);
 
