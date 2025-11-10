@@ -1,7 +1,4 @@
-
 import Joi from 'joi';
-import { HTTP_STATUS } from '../constants/index.js';
-
 
 export const registerSchema = Joi.object({
   name: Joi.string().min(3).required(),
