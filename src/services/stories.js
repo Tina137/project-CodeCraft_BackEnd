@@ -1,4 +1,5 @@
-import { Story } from '../db/models/stories.js';
+import { StoryCollection } from '../db/models/stories.js';
+import { UsersCollection } from '../db/models/user.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 import { SORT_ORDER } from '../constants/index.js';
 import createHttpError from 'http-errors';
@@ -18,9 +19,9 @@ export const getStories = async ({
     filter.category = category;
   }
 
-  const storiesCount = await Story.countDocuments(filter);
+  const storiesCount = await StoryCollection.countDocuments(filter);
 
-  const stories = await Story.find(filter)
+  const stories = await StoryCollection.find(filter)
     .skip(skip)
     .limit(limit)
     .sort({ [sortBy]: sortOrder })
@@ -35,19 +36,20 @@ export const getStories = async ({
 };
 
 export const getStoryById = async (storyId) => {
-  const story = await Story.findById(storyId);
+  const story = await StoryCollection.findById(storyId);
 
   if (!story) throw createHttpError(404, 'Story not found');
   return story;
 };
 
 export const createStory = async (payload) => {
-  const story = await Story.create(payload);
+  const story = await StoryCollection.create(payload);
+  await UsersCollection.findByIdAndUpdate(payload.ownerId, { $inc: { articlesAmount: 1 } });
   return story;
 };
 
 export const updateStory = async (storyId, userId, updateData) => {
-  const story = await Story.findById(storyId);
+  const story = await StoryCollection.findById(storyId);
 
   if (!story) throw createHttpError(404, 'Story not found');
 

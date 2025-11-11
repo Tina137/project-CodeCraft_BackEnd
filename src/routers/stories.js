@@ -1,5 +1,4 @@
-import express from 'express';
-
+import { Router } from 'express';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { createStorySchema, updateStorySchema } from '../validation/stories.js';
 import {
@@ -14,7 +13,7 @@ import { isValidId } from '../middlewares/isValidId.js';
 import { authenticate } from '../middlewares/authenticate.js';
 import { upload } from '../middlewares/multer.js';
 
-const router = express.Router();
+const router = Router();
 
 router.get('/', ctrlWrapper(getStoriesController));
 router.get('/:storyId', isValidId, ctrlWrapper(getStoryByIdController));

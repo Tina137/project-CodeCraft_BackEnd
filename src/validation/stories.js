@@ -23,4 +23,4 @@ export const updateStorySchema = Joi.object({
     }
     return true;
   }),
-});
+}).min(1);
