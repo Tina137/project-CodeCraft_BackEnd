@@ -30,7 +30,7 @@ router.get(
 router.get('/current', authenticate, ctrlWrapper(getCurrentUserController));
 
 router.patch(
-  '/updateUser/:userId',
+  '/updateUser',
   authenticate,
   validateBody(updateUserSchema),
   ctrlWrapper(updateUserInfoController),

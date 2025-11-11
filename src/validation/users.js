@@ -1,7 +1,7 @@
 import Joi from 'joi';
 
 export const updateUserSchema = Joi.object({
-  name: Joi.string().min(3).max(32).messages({
+  name: Joi.string().min(3).max(32).trim().messages({
     'string.min': "Поле 'ім'я' має містити не менше 3 символів",
     'string.max': "Поле 'ім'я' має містити не більше 32 символів",
   }),
@@ -15,7 +15,7 @@ export const updateUserSchema = Joi.object({
     'string.uri': 'Поле avatarUrl має містити коректне посилання (URL)',
   }),
 
-  description: Joi.string().max(500).messages({
+  description: Joi.string().max(150).messages({
     'string.max': 'Опис має містити не більше 500 символів',
   }),
 

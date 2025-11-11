@@ -12,15 +12,14 @@ export const getCurrentUserController = async (req, res) => {
     throw createHttpError(401, 'Not authorized');
   }
 
-  res.json({
-    status: 200,
+  res.status(200).json({
     message: 'Current user fetched successfully',
     data: user,
   });
 };
 
 export const updateUserInfoController = async (req, res, next) => {
-  const { userId } = req.params;
+  const userId = req.user._id;
   const user = await updateUserInfo(userId, req.body);
 
   if (!user) {
@@ -28,8 +27,7 @@ export const updateUserInfoController = async (req, res, next) => {
     return;
   }
 
-  res.json({
-    status: 200,
+  res.status(200).json({
     message: 'User was successfully updated!',
     data: user,
   });

@@ -21,6 +21,12 @@ paths:
   #   delete:
   #     $ref: ../swagger/paths/contacts/{id}/delete.yaml
 
+  /users/current:
+    $ref: ../swagger/paths/users/current/get.yaml
+  /users/updateUser:
+    $ref: ../swagger/paths/users/updateUser/patch.yaml
+
+
   /user/saved/{storyId}:
     post:
       $ref: '../swagger/paths/users/saved/{storyId}/post.yaml'
