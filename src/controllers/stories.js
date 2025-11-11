@@ -33,6 +33,21 @@ export const getStoriesController = async (req, res, next) => {
   }
 };
 
+export const getStoryByIdController = async (req, res, next) => {
+  try {
+    const { storyId } = req.params;
+    const story = await getStoryById(storyId);
+
+    res.json({
+      status: HTTP_STATUS.OK,
+      message: 'Story fetched successfully',
+      data: story,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const createStoryController = async (req, res, next) => {
   try {
     const { title, article, category } = req.body;
@@ -63,21 +78,6 @@ export const createStoryController = async (req, res, next) => {
     res.status(HTTP_STATUS.CREATED).json({
       status: HTTP_STATUS.CREATED,
       message: 'Successfully created a story!',
-      data: story,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const getStoryByIdController = async (req, res) => {
-  try {
-    const { storyId } = req.params;
-    const story = await getStoryById(storyId);
-
-    res.json({
-      status: HTTP_STATUS.OK,
-      message: 'Story fetched successfully',
       data: story,
     });
   } catch (error) {
