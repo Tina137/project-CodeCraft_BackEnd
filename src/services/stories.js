@@ -34,16 +34,15 @@ export const getStories = async ({
   };
 };
 
-export const createStory = async (payload) => {
-  const story = await Story.create(payload);
+export const getStoryById = async (storyId) => {
+  const story = await Story.findById(storyId);
+
+  if (!story) throw createHttpError(404, 'Story not found');
   return story;
 };
 
-export const getStoryById = async (storyId) => {
-  const story = await Story.findById(storyId)
-    .populate('category')
-    .populate('ownerId');
-  if (!story) throw createHttpError(404, 'Story not found');
+export const createStory = async (payload) => {
+  const story = await Story.create(payload);
   return story;
 };
 

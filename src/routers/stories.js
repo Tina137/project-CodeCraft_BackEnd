@@ -17,24 +17,11 @@ import { upload } from '../middlewares/multer.js';
 const router = express.Router();
 
 router.get('/', ctrlWrapper(getStoriesController));
+router.get('/:storyId', isValidId, ctrlWrapper(getStoryByIdController));
 
 router.use(authenticate);
 
-router.post(
-  '/',
-  upload.single('img'),
-  validateBody(createStorySchema),
-  ctrlWrapper(createStoryController),
-);
-
-router.get('/:storyId', isValidId, ctrlWrapper(getStoryByIdController));
-
-router.patch(
-  '/:storyId',
-  isValidId,
-  upload.single('img'),
-  validateBody(updateStorySchema),
-  ctrlWrapper(updateStoryController),
-);
+router.post('/', upload.single('img'), validateBody(createStorySchema), ctrlWrapper(createStoryController));
+router.patch('/:storyId', isValidId, upload.single('img'), validateBody(updateStorySchema), ctrlWrapper(updateStoryController));
 
 export default router;
