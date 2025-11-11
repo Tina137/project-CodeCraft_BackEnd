@@ -4,16 +4,14 @@ import createHttpError from 'http-errors';
 
 export const getUserByIdController = async (req, res) => {
   const { userId } = req.params;
-  const { page = 1, limit = 6 } = req.query; // добавляем пагинацию
+  const { page = 1, limit = 6 } = req.query;
   const skip = (page - 1) * limit;
 
   const user = await UsersCollection.findById(userId).select('-password');
   if (!user) throw createHttpError(404, 'User not found');
 
-  // Считаем общее количество историй пользователя
   const totalStories = await Story.countDocuments({ ownerId: userId });
 
-  // Получаем истории пользователя с пагинацией
   const userStories = await Story.find({ ownerId: userId })
     .skip(skip)
     .limit(Number(limit));
