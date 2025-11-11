@@ -1,10 +1,37 @@
 import createHttpError from 'http-errors';
-import {} from '../services/stories.js';
+import { getStories } from '../services/stories.js';
+import { HTTP_STATUS } from '../constants/index.js';
 
 import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 import { getEnvVar } from '../utils/getEnvVar.js';
 import { createStory, getStoryById, updateStory } from '../services/stories.js';
+import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { parseSortParams } from '../utils/parseSortParams.js';
+
+export const getStoriesController = async (req, res, next) => {
+  try {
+    const { page, perPage } = parsePaginationParams(req.query);
+    const { sortBy, sortOrder } = parseSortParams(req.query);
+    const { category } = req.query;
+
+    const stories = await getStories({
+      page,
+      perPage,
+      sortBy,
+      sortOrder,
+      category,
+    });
+
+    res.json({
+      status: HTTP_STATUS.OK,
+      message: 'Successfully found stories!',
+      data: stories,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const createStoryController = async (req, res, next) => {
   try {
@@ -33,8 +60,8 @@ export const createStoryController = async (req, res, next) => {
       ownerId: req.user._id,
     });
 
-    res.status(201).json({
-      status: 201,
+    res.status(HTTP_STATUS.CREATED).json({
+      status: HTTP_STATUS.CREATED,
       message: 'Successfully created a story!',
       data: story,
     });
@@ -49,7 +76,7 @@ export const getStoryByIdController = async (req, res) => {
     const story = await getStoryById(storyId);
 
     res.json({
-      status: 200,
+      status: HTTP_STATUS.OK,
       message: 'Story fetched successfully',
       data: story,
     });
@@ -83,7 +110,7 @@ export const updateStoryController = async (req, res, next) => {
     const updatedStory = await updateStory(storyId, userId, updateData);
 
     res.json({
-      status: 200,
+      status: HTTP_STATUS.OK,
       message: 'Successfully updated a story!',
       data: updatedStory,
     });

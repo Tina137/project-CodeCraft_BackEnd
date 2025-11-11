@@ -3,6 +3,37 @@ import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 import { SORT_ORDER } from '../constants/index.js';
 import createHttpError from 'http-errors';
 
+export const getStories = async ({
+  page = 1,
+  perPage = 10,
+  sortOrder = SORT_ORDER.ASC,
+  sortBy = '_id',
+  category,
+}) => {
+  const limit = perPage;
+  const skip = (page - 1) * perPage;
+
+  const filter = {};
+  if (category) {
+    filter.category = category;
+  }
+
+  const storiesCount = await Story.countDocuments(filter);
+
+  const stories = await Story.find(filter)
+    .skip(skip)
+    .limit(limit)
+    .sort({ [sortBy]: sortOrder })
+    .exec();
+
+  const paginationData = calculatePaginationData(storiesCount, perPage, page);
+
+  return {
+    data: stories,
+    ...paginationData,
+  };
+};
+
 export const createStory = async (payload) => {
   const story = await Story.create(payload);
   return story;

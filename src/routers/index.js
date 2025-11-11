@@ -6,10 +6,7 @@ import { authenticate } from '../middlewares/authenticate.js';
 
 const router = Router();
 
-
 router.use('/auth', authRouter);
-
-router.use(authenticate);
 
 router.use('/users', usersRouter);
 router.use('/stories', storiesRouter);
