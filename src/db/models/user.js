@@ -6,6 +6,13 @@ const usersSchema = new Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     token: { type: String, default: null },
+    savedStories: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Story',
+        default: [],
+      },
+    ],
   },
   { timestamps: true, versionKey: false },
 );

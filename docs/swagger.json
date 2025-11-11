@@ -7,220 +7,289 @@
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "description": "Подорожник - ділись своїми подорожами"
+    "description": "<опис вашого додатку>"
   },
   "servers": [
     {
       "url": "http://localhost:3000"
+    },
+    {
+      "url": "https://nodejs-hw-mongodb-kxks.onrender.com"
     }
   ],
   "tags": [
     {
-      "name": "Stories",
-      "description": "Operations about stories."
+      "name": "Contacts",
+      "description": "Operations about users."
     }
   ],
   "paths": {
-    "/stories": {
-      "get": {
-        "tags": ["Stories"],
-        "summary": "Get all stories",
-        "operationId": "getStories",
-        "security": [{ "bearerAuth": [] }],
+    "/user/saved/{storyId}": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Add story to saved list",
+        "description": "Adds a story ID to the user's `savedStories` list and increments the story's `favoriteCount`.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "storyId",
+            "in": "path",
+            "required": true,
+            "description": "ID історії, яку потрібно зберегти / ID of the story to save",
+            "schema": {
+              "type": "string",
+              "example": "68498236a100312bea079008"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Successful operation",
+            "description": "Story successfully added to saved list",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": { "$ref": "#/components/schemas/story" }
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Story added to saved",
+                      "savedStories": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "example": "68498236a100312bea079008"
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/400" },
-          "401": { "$ref": "#/components/responses/401" },
-          "500": { "$ref": "#/components/responses/500" }
-        }
-      },
-      "post": {
-        "tags": ["Stories"],
-        "summary": "Create a new story",
-        "operationId": "createStory",
-        "security": [{ "bearerAuth": [] }],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": { "$ref": "#/components/schemas/story" }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Story created successfully",
+          "400": {
+            "description": "Story already saved or invalid request",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/story" }
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Story already saved"
+                    }
+                  }
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/400" },
-          "401": { "$ref": "#/components/responses/401" },
-          "500": { "$ref": "#/components/responses/500" }
-        }
-      }
-    },
-    "/stories/{id}": {
-      "get": {
-        "tags": ["Stories"],
-        "summary": "Get story by ID",
-        "operationId": "getStoryById",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "Story ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "description": "Story or user not found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/story" }
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Story not found"
+                    }
+                  }
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/400" },
-          "401": { "$ref": "#/components/responses/401" },
-          "500": { "$ref": "#/components/responses/500" }
-        }
-      },
-      "patch": {
-        "tags": ["Stories"],
-        "summary": "Update a story",
-        "operationId": "updateStory",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "Story ID"
+          "500": {
+            "$ref": "#/components/responses/500"
           }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": { "$ref": "#/components/schemas/story" }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Story updated successfully",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/story" }
-              }
-            }
-          },
-          "400": { "$ref": "#/components/responses/400" },
-          "401": { "$ref": "#/components/responses/401" },
-          "500": { "$ref": "#/components/responses/500" }
         }
       },
       "delete": {
-        "tags": ["Stories"],
-        "summary": "Delete a story",
-        "operationId": "deleteStory",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
+        "tags": [
+          "Users"
+        ],
+        "summary": "Remove story from saved list",
+        "description": "Removes a story ID from the user's `savedStories` list and decrements the story's `favoriteCount`.\n",
+        "security": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "Story ID"
+            "bearerAuth": []
           }
         ],
-        "responses": {
-          "204": {
-            "description": "Story deleted successfully"
-          },
-          "400": { "$ref": "#/components/responses/400" },
-          "401": { "$ref": "#/components/responses/401" },
-          "500": { "$ref": "#/components/responses/500" }
-        }
-      }
-    },
-    "/stories/category/{categoryId}": {
-      "get": {
-        "tags": ["Stories"],
-        "summary": "Get stories by category ID",
-        "operationId": "getStoriesByCategory",
-        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
-            "name": "categoryId",
+            "name": "storyId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
-            "description": "Category ID"
+            "description": "ID of the story to remove",
+            "schema": {
+              "type": "string",
+              "example": "68498236a100312bea079008"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Successful operation",
+            "description": "Story successfully removed from saved list",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": { "$ref": "#/components/schemas/story" }
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Story removed from saved"
+                    },
+                    "savedStories": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "example": []
+                      }
+                    }
+                  }
                 }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/400" },
-          "401": { "$ref": "#/components/responses/401" },
-          "500": { "$ref": "#/components/responses/500" }
-        }
-      }
-    },
-    "/stories/{id}/favorite": {
-      "patch": {
-        "tags": ["Stories"],
-        "summary": "Add or remove story from favorites",
-        "operationId": "toggleFavorite",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "Story ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Favorite status updated",
+          "400": {
+            "description": "Story not in saved list or invalid request",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/story" }
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Story not in saved list"
+                    }
+                  }
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/400" },
-          "401": { "$ref": "#/components/responses/401" },
-          "500": { "$ref": "#/components/responses/500" }
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "description": "Story or user not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Story not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "User login",
+        "operationId": "loginUser",
+        "description": "Authenticate a user and return a JWT token.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "The user's email address.",
+                    "example": "1234@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "The user's password.",
+                    "example": "strongpassword123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully logged in!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "HTTP status code.",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Success message.",
+                      "example": "Successfully logged in!"
+                    },
+                    "data": {
+                      "type": "string",
+                      "description": "JWT token for authenticated requests.",
+                      "example": "accessToken DkaGVIWAQeo5/2blc96pd3lqAggNPzOyiTdlHViz"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          }
         }
       }
     }
@@ -232,101 +301,32 @@
         "scheme": "bearer"
       }
     },
-    "schemas": {
-      "story": {
-        "type": "object",
-        "required": [
-          "_id",
-          "img",
-          "title",
-          "article",
-          "category",
-          "ownerId",
-          "date",
-          "favoriteCount"
-        ],
-        "properties": {
-          "_id": {
-            "description": "Story's id",
-            "type": "string",
-            "example": "65e4decdd286b30065d54af9"
-          },
-          "img": {
-            "type": "string",
-            "description": "Story's photo",
-            "default": null,
-            "format": "binary",
-            "example": "https://res.cloudinary.com/dha4xvgfi/image/upload/v1759947947/aclxd7sbpsrb8hviowbe.jpg"
-          },
-          "title": {
-            "description": "Story's title",
-            "type": "string",
-            "example": "Мадагаскар: острів дивовижних створінь"
-          },
-          "article": {
-            "description": "Story's article",
-            "type": "string",
-            "example": "Мадагаскар — це планета в мініатюрі..."
-          },
-          "category": {
-            "description": "Story category id",
-            "type": "string",
-            "example": "68efd834f1781f960b1e7a6c"
-          },
-          "ownerId": {
-            "description": "Story owner id",
-            "type": "string",
-            "example": "68efd834f1781f960b1e7a6c"
-          },
-          "contactType": {
-            "description": "Story's type",
-            "type": "string",
-            "enum": ["work", "home", "personal"]
-          },
-          "date": {
-            "type": "string",
-            "example": "2024-08-28"
-          },
-          "favoriteCount": {
-            "type": "number",
-            "example": 5
-          }
-        }
-      }
-    },
     "responses": {
-      "400": {
-        "description": "Bad Request",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": ["status", "message", "data"],
-              "properties": {
-                "status": { "type": "integer", "example": 400 },
-                "message": { "type": "string", "example": "Bad Request" },
-                "data": {
-                  "type": "array",
-                  "items": { "type": "string" }
-                }
-              }
-            }
-          }
-        }
-      },
       "401": {
         "description": "Unauthorized error",
         "content": {
           "application/json": {
             "schema": {
               "type": "object",
-              "required": ["status", "message", "data"],
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
               "properties": {
-                "status": { "type": "integer", "example": 401 },
-                "message": { "type": "string", "example": "UnauthorizedError" },
+                "status": {
+                  "type": "integer",
+                  "example": 401
+                },
+                "message": {
+                  "type": "string",
+                  "example": "UnauthorizedError"
+                },
                 "data": {
                   "type": "object",
-                  "required": ["message"],
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
@@ -345,9 +345,15 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "required": ["status", "message"],
+              "required": [
+                "status",
+                "message"
+              ],
               "properties": {
-                "status": { "type": "integer", "example": 500 },
+                "status": {
+                  "type": "integer",
+                  "example": 500
+                },
                 "message": {
                   "type": "string",
                   "example": "Internal Server Error"
