@@ -1,0 +1,25 @@
+type: object
+properties:
+  _id:
+    type: string
+    example: 64a0b91c9f12a81234abcd12
+  name:
+    type: string
+    example: Іван Петренко
+  email:
+    type: string
+    example: ivan@example.com
+  avatarUrl:
+    type: string
+    example: /uploads/avatars/ivan.jpg
+  savedStories:
+    type: array
+    items:
+      type: string
+    example: ["64a0b91c9f12a81234abcd12"]
+  createdAt:
+    type: string
+    format: date-time
+  updatedAt:
+    type: string
+    format: date-time
