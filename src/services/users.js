@@ -1,6 +1,7 @@
 import { UsersCollection } from '../db/models/user.js';
 import { Story } from '../db/models/stories.js';
 import createHttpError from 'http-errors';
+import mongoose from 'mongoose';
 
 export const updateUserInfo = async (userId, payload) => {
   const userUpdate = await UsersCollection.findOneAndUpdate(
@@ -13,12 +14,13 @@ export const updateUserInfo = async (userId, payload) => {
 };
 
 // функція для оновлення аватару
-export const updateUserAvatar = async (userId, filename) => {
+export const updateUserAvatar = async (userId, filename, baseUrl) => {
   const avatarPath = `/uploads/avatars/${filename}`;
+  const fullUrl = `${baseUrl}${avatarPath}`;
 
   const updatedUser = await UsersCollection.findByIdAndUpdate(
     userId,
-    { avatarUrl: avatarPath },
+    { avatarUrl: fullUrl },
     { new: true },
   );
 
@@ -27,6 +29,10 @@ export const updateUserAvatar = async (userId, filename) => {
 
 // Додає історію до збережених користувача
 export const addStoryToSaved = async (userId, storyId) => {
+  if (!mongoose.Types.ObjectId.isValid(storyId)) {
+    throw createHttpError(400, 'Invalid story ID format');
+  }
+
   const user = await UsersCollection.findById(userId);
   if (!user) throw createHttpError(404, 'User not found');
 

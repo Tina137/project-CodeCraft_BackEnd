@@ -13,6 +13,7 @@ const usersSchema = new Schema(
         default: [],
       },
     ],
+    avatarUrl: { type: String },
   },
   { timestamps: true, versionKey: false },
 );

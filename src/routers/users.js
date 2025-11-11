@@ -21,13 +21,12 @@ import {
 } from '../controllers/publicUsers.js';
 
 router.get('/', ctrlWrapper(getUsersListController));
+router.get('/current', authenticate, ctrlWrapper(getCurrentUserController));
 router.get(
   '/:userId',
   optionalAuthenticate,
   ctrlWrapper(getUserByIdController),
 );
-
-router.get('/current', authenticate, ctrlWrapper(getCurrentUserController));
 
 router.patch(
   '/updateUser',
