@@ -11,20 +11,21 @@ tags:
     description: Operations about users.
 servers:
   - url: http://localhost:3000
-  - url: https://nodejs-hw-mongodb-kxks.onrender.com
+  # - url: https://nodejs-hw-mongodb-kxks.onrender.com
 paths:
-  /contacts/{id}:
-    get:
-      $ref: ../swagger/paths/contacts/{id}/get.yaml
-    patch:
-      $ref: ../swagger/paths/contacts/{id}/patch.yaml
-    delete:
-      $ref: ../swagger/paths/contacts/{id}/delete.yaml
-  /contacts:
-    get:
-      $ref: ../swagger/paths/contacts/get.yaml
+  # /contacts/{id}:
+  #   get:
+  #     $ref: ../swagger/paths/contacts/{id}/get.yaml
+  #   patch:
+  #     $ref: ../swagger/paths/contacts/{id}/patch.yaml
+  #   delete:
+  #     $ref: ../swagger/paths/contacts/{id}/delete.yaml
+
+  /user/saved/{storyId}:
     post:
-      $ref: ../swagger/paths/contacts/post.yaml
+      $ref: '../swagger/paths/users/saved/{storyId}/post.yaml'
+    delete:
+      $ref: '../swagger/paths/users/saved/{storyId}/delete.yaml'
 
   /auth/login:
     post:

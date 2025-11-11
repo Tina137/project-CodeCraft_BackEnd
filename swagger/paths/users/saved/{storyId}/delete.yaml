@@ -1,0 +1,61 @@
+tags:
+  - Users
+summary: Remove story from saved list
+description: >
+  Removes a story ID from the user's `savedStories` list and decrements the story's `favoriteCount`.
+security:
+  - bearerAuth: []
+parameters:
+  - name: storyId
+    in: path
+    required: true
+    description: ID of the story to remove
+    schema:
+      type: string
+      example: 68498236a100312bea079008
+responses:
+  '200':
+    description: Story successfully removed from saved list
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Story removed from saved
+            savedStories:
+              type: array
+              items:
+                type: string
+                example: []
+  '400':
+    description: Story not in saved list or invalid request
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: number
+              example: 400
+            message:
+              type: string
+              example: Story not in saved list
+  '401':
+    $ref: '../../../../components/responses/401.yaml'
+  '404':
+    description: Story or user not found
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: number
+              example: 404
+            message:
+              type: string
+              example: Story not found
+  '500':
+    $ref: '../../../../components/responses/500.yaml'
