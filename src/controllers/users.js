@@ -1,5 +1,4 @@
 import createHttpError from 'http-errors';
-// import { updateUserProfile } from '../services/users.js';
 import { HTTP_STATUS } from '../constants/index.js';
 import {
   getAllUsers,
@@ -9,9 +8,6 @@ import {
   addStoryToSaved,
   removeStoryFromSaved,
 } from '../services/users.js';
-// import { getEnvVar } from '../utils/getEnvVar.js';
-// import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
-// import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
 
 export const getAllUsersController = async (req, res, next) => {
   try {
@@ -65,33 +61,9 @@ export const getCurrentUserController = async (req, res) => {
 export const updateUserProfileController = async (req, res, next) => {
   try {
     const userId = req.user._id;
-    const file = req.file;
     const body = req.body || {};
 
-    const updatedUser = await updateUserProfile(userId, body, file);
-
-    // let avatarUrl;
-
-    // if (file) {
-    //   if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
-    //     avatarUrl = await saveFileToCloudinary(file);
-    //   } else {
-    //     avatarUrl = await saveFileToUploadDir(file);
-    //   }
-    // }
-
-    // const allowedFields = ['name', 'description', 'email'];
-    // const updateData = {};
-
-    // for (const field of allowedFields) {
-    //   if (body[field] !== undefined) {
-    //     updateData[field] = body[field];
-    //   }
-    // }
-
-    // if (avatarUrl) updateData.avatarUrl = avatarUrl;
-
-    // const updatedUser = await updateUserProfile(userId, updateData);
+    const updatedUser = await updateUserProfile(userId, body);
 
     res.status(HTTP_STATUS.OK).json({
       status: HTTP_STATUS.OK,

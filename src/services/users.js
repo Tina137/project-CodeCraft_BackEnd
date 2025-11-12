@@ -28,7 +28,7 @@ export const getUserById = async (userId) => {
 };
 
 // Оновлення профілю користувача (ім'я, email, description, аватар)
-export const updateUserProfile = async (userId, updateData, file) => {
+export const updateUserProfile = async (userId, updateData) => {
   const user = await UsersCollection.findById(userId);
   if (!user) throw createHttpError(404, 'User not found');
 
@@ -37,16 +37,6 @@ export const updateUserProfile = async (userId, updateData, file) => {
 
   for (const field of allowedFields) {
     if (updateData[field] !== undefined) dataToUpdate[field] = updateData[field];
-  }
-
-  if (file) {
-    let avatarUrl;
-    if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
-      avatarUrl = await saveFileToCloudinary(file);
-    } else {
-      avatarUrl = await saveFileToUploadDir(file);
-    }
-    dataToUpdate.avatarUrl = avatarUrl;
   }
 
   Object.assign(user, dataToUpdate);
