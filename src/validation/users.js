@@ -11,10 +11,6 @@ export const updateUserSchema = Joi.object({
     'string.max': 'Email має містити не більше 64 символів',
   }),
 
-  avatarUrl: Joi.string().uri().messages({
-    'string.uri': 'Поле avatarUrl має містити коректне посилання (URL)',
-  }),
-
   description: Joi.string().max(150).messages({
     'string.max': 'Опис має містити не більше 500 символів',
   }),

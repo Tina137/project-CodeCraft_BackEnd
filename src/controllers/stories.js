@@ -12,7 +12,7 @@ export const getStoriesController = async (req, res, next) => {
   try {
     const { page, perPage } = parsePaginationParams(req.query);
     const { sortBy, sortOrder } = parseSortParams(req.query);
-    const { category } = req.query;
+    const { category, ownerId } = req.query;
 
     const stories = await getStories({
       page,
@@ -20,6 +20,7 @@ export const getStoriesController = async (req, res, next) => {
       sortBy,
       sortOrder,
       category,
+      ownerId,
     });
 
     res.json({
@@ -86,9 +87,11 @@ export const createStoryController = async (req, res, next) => {
 
 export const updateStoryController = async (req, res, next) => {
   try {
-    const { storyId } = req.params;
+    const storyId = req.params.storyId;
     const file = req.file;
     const userId = req.user._id;
+
+    const body = req.body || {};
 
     let imgUrl;
 
@@ -104,8 +107,8 @@ export const updateStoryController = async (req, res, next) => {
     const updateData = {};
 
     for (const field of allowedFields) {
-      if (req.body[field] !== undefined) {
-        updateData[field] = req.body[field];
+      if (body[field] !== undefined) {
+        updateData[field] = body[field];
       }
     }
 
