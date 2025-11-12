@@ -29,8 +29,8 @@ paths:
   /users/updateUser:
     $ref: ../swagger/paths/users/updateUser/patch.yaml
   /user/saved/{storyId}:
-    post:
-      $ref: '../swagger/paths/users/saved/{storyId}/post.yaml'
+    patch:
+      $ref: '../swagger/paths/users/saved/{storyId}/patch.yaml'
     delete:
       $ref: '../swagger/paths/users/saved/{storyId}/delete.yaml'
   /auth/login:

@@ -38,7 +38,7 @@ router.patch(
   ctrlWrapper(updateAvatar),
 );
 
-router.post('/saved/:storyId', ctrlWrapper(addSavedStoryController));
+router.patch('/saved/:storyId', ctrlWrapper(addSavedStoryController));
 router.delete('/saved/:storyId', ctrlWrapper(removeSavedStoryController));
 
 export default router;
