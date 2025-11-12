@@ -1,7 +1,6 @@
 import createHttpError from 'http-errors';
 import { getStories } from '../services/stories.js';
 import { HTTP_STATUS } from '../constants/index.js';
-
 import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 import { getEnvVar } from '../utils/getEnvVar.js';
@@ -53,8 +52,8 @@ export const createStoryController = async (req, res, next) => {
     const { title, article, category } = req.body;
     const file = req.file;
 
-    if (!title || !article || !category) {
-      throw createHttpError(400, 'Please provide all required fields');
+    if (!file) {
+      throw createHttpError(400, 'Image is required');
     }
 
     let imgUrl;
@@ -101,9 +100,14 @@ export const updateStoryController = async (req, res, next) => {
       }
     }
 
-    const updateData = {
-      ...req.body,
-    };
+    const allowedFields = ['title', 'article', 'category'];
+    const updateData = {};
+
+    for (const field of allowedFields) {
+      if (req.body[field] !== undefined) {
+        updateData[field] = req.body[field];
+      }
+    }
 
     if (imgUrl) updateData.img = imgUrl;
 
