@@ -1,0 +1,37 @@
+type: object
+required:
+  - _id
+  - name
+  - description
+properties:
+  _id:
+    type: string
+    description: Унікальний ідентифікатор користувача
+    example: 6881563901add19ee16fcff5
+  name:
+    type: string
+    description: Ім’я користувача
+    example: Дмитро Романенко
+  avatarUrl:
+    type: string
+    format: uri
+    description: URL до аватара користувача
+    example: https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcff5.webp
+  articlesAmount:
+    type: integer
+    description: Кількість опублікованих історій користувача
+    example: 13
+  description:
+    type: string
+    description: Короткий опис користувача
+    example: Привіт! Я Дмитро. Люблю знаходити приховані перлини у кожній поїздці.
+  favoriteStories:
+    type: array
+    description: Масив ID історій, доданих у вибране користувачем
+    items:
+      type: string
+      example: 67f1e93c89a31a4524e3ac02
+  token:
+    type: string
+    description: Поточний токен авторизації або null
+    example: null

@@ -21,7 +21,7 @@ export const getUserByIdController = async (req, res) => {
     canFavorite: !!req.isAuthenticated,
   };
 
-  //! Этот блок добавит булевые значения к историям автора, если история у него в избранном будет true - для UI компонентов. надо дописать
+  // Этот блок добавит булевые значения isFavorited к историям искомого автора, если история у Юзера в избранном будет true - для UI компонентов
   const storiesData = userStories.map((story) => {
     let isFavorited = false;
 

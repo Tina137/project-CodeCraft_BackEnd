@@ -2,7 +2,6 @@
   "name": "project-codecraft_backend",
   "version": "1.0.0",
   "main": "index.js",
-
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
@@ -37,6 +36,7 @@
     "multer": "^2.0.2",
     "nodemailer": "^7.0.10",
     "pino-http": "^11.0.0",
+    "streamifier": "^0.1.1",
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
