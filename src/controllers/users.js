@@ -3,10 +3,13 @@ import {
   updateUserInfo,
   addStoryToSaved,
   removeStoryFromSaved,
+  updateUserAvatar,
 } from '../services/users.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 
 export const getCurrentUserController = async (req, res) => {
   const user = req.user;
+  console.log(user);
 
   if (!user) {
     throw createHttpError(401, 'Not authorized');
@@ -39,7 +42,13 @@ export const updateAvatar = async (req, res) => {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    const updatedUser = await updateUserAvatar(req.user._id, req.file.filename);
+    const baseUrl = await saveFileToCloudinary(req.file);
+
+    const updatedUser = await updateUserAvatar(
+      req.user._id,
+      req.file.filename,
+      baseUrl,
+    );
 
     res.json({
       message: 'Avatar updated successfully',
