@@ -1,0 +1,87 @@
+tags:
+  - Stories
+summary: Update a story
+operationId: updateStory
+description: >
+  Updates an existing story
+security:
+  - bearerAuth: []
+parameters:
+  - name: storyId
+    in: path
+    required: true
+    description: ID of the story to update
+    schema:
+      type: string
+      example: 68efd834f1781f960b1e7a6c
+requestBody:
+  required: true
+  content:
+    multipart/form-data:
+      schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: Updated story title
+            example: 'Мандрівка Карпатами'
+          article:
+            type: string
+            description: Updated story content
+            example: 'Неймовірна поїздка в гори з друзями...'
+          category:
+            type: string
+            description: Updated category ID
+            example: '68efd834f1781f960b1e7a6c'
+          img:
+            type: string
+            format: binary
+            description: Updated story image
+responses:
+  '200':
+    description: Story successfully updated
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully updated a story!
+            data:
+              $ref: '../../../components/schemas/story.yaml'
+  '400':
+    $ref: '../../../components/responses/400.yaml'
+  '401':
+    $ref: '../../../components/responses/401.yaml'
+  '403':
+    description: Forbidden — cannot edit someone else's story
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 403
+            message:
+              type: string
+              example: You can edit only your own stories
+  '404':
+    description: Story not found
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 404
+            message:
+              type: string
+              example: Story not found
+  '500':
+    $ref: '../../../components/responses/500.yaml'

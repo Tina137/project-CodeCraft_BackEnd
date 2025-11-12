@@ -12,22 +12,27 @@
   "servers": [
     {
       "url": "http://localhost:3000"
-    },
-    {
-      "url": "https://nodejs-hw-mongodb-kxks.onrender.com"
     }
   ],
   "tags": [
     {
-      "name": "Public routes",
+      "name": "Public routers",
       "description": "Публічні маршрути доступні без авторизвції"
+    },
+    {
+      "name": "Contacts",
+      "description": "Operations about users."
+    },
+    {
+      "name": "Stories",
+      "description": "Operations related to travel stories."
     }
   ],
   "paths": {
     "/users": {
       "get": {
         "tags": [
-          "Public routes"
+          "Public routers"
         ],
         "summary": "Get list of all users",
         "operationId": "getUsersList",
@@ -123,7 +128,7 @@
     "/users/{userId}": {
       "get": {
         "tags": [
-          "Public routes"
+          "Public routers"
         ],
         "summary": "Get user profile by ID",
         "operationId": "getUserById",
@@ -138,7 +143,7 @@
             "in": "path",
             "name": "userId",
             "required": true,
-            "description": "ID автора, чьи данные и статьи запрашиваются",
+            "description": "ID автора, чиї дані запитуються",
             "schema": {
               "type": "string",
               "example": "6881563901add19ee16fcff5"
@@ -148,7 +153,7 @@
             "in": "query",
             "name": "page",
             "required": false,
-            "description": "Номер страницы (пагинация)",
+            "description": "Номер сторінки (пагінація)",
             "schema": {
               "type": "integer",
               "default": 1,
@@ -159,7 +164,7 @@
             "in": "query",
             "name": "limit",
             "required": false,
-            "description": "Количество элементов на странице",
+            "description": "Кільість елементів на сторінці",
             "schema": {
               "type": "integer",
               "default": 6,
@@ -328,6 +333,599 @@
           }
         }
       }
+    },
+    "/users/current": {
+      "get": {
+        "operationId": "getCurrentUser",
+        "summary": "Get current user info",
+        "description": "Return current authenticated user info",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User info is successfully fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Current user fetched successfully"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/user"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/users/updateUser": {
+      "patch": {
+        "operationId": "updateUserInfo",
+        "summary": "Update user info",
+        "description": "Updates current user info. Authentication is required.",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/updateUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User info updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User was successfully updated!"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/user"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/user/saved/{storyId}": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Add story to saved list",
+        "description": "Adds a story ID to the user's `savedStories` list and increments the story's `favoriteCount`.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "storyId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the story to save",
+            "schema": {
+              "type": "string",
+              "example": "68498236a100312bea079008"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Story successfully added to saved list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Story added to saved",
+                      "savedStories": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "example": "68498236a100312bea079008"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Story already saved or invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Story already saved"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "description": "Story or user not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Story not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Remove story from saved list",
+        "description": "Removes a story ID from the user's `savedStories` list and decrements the story's `favoriteCount`.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "storyId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the story to remove",
+            "schema": {
+              "type": "string",
+              "example": "68498236a100312bea079008"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Story successfully removed from saved list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Story removed from saved"
+                    },
+                    "savedStories": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "example": []
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Story not in saved list or invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Story not in saved list"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "description": "Story or user not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Story not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "User login",
+        "operationId": "loginUser",
+        "description": "Authenticate a user and return a JWT token.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "The user's email address.",
+                    "example": "1234@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "The user's password.",
+                    "example": "strongpassword123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully logged in!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "HTTP status code.",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Success message.",
+                      "example": "Successfully logged in!"
+                    },
+                    "data": {
+                      "type": "string",
+                      "description": "JWT token for authenticated requests.",
+                      "example": "accessToken DkaGVIWAQeo5/2blc96pd3lqAggNPzOyiTdlHViz"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          }
+        }
+      }
+    },
+    "/stories": {
+      "post": {
+        "tags": [
+          "Stories"
+        ],
+        "summary": "Create a new story",
+        "operationId": "createStory",
+        "description": "Creates a new story\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "article",
+                  "category"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Story title",
+                    "example": "Мандрівка Карпатами"
+                  },
+                  "article": {
+                    "type": "string",
+                    "description": "Main text of the story",
+                    "example": "Неймовірна поїздка в гори з друзями..."
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "Category ID",
+                    "example": "68efd834f1781f960b1e7a6c"
+                  },
+                  "img": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Image file for the story"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Story successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully created a story!"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/story"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/stories/{storyId}": {
+      "patch": {
+        "tags": [
+          "Stories"
+        ],
+        "summary": "Update a story",
+        "operationId": "updateStory",
+        "description": "Updates an existing story\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "storyId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the story to update",
+            "schema": {
+              "type": "string",
+              "example": "68efd834f1781f960b1e7a6c"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Updated story title",
+                    "example": "Мандрівка Карпатами"
+                  },
+                  "article": {
+                    "type": "string",
+                    "description": "Updated story content",
+                    "example": "Неймовірна поїздка в гори з друзями..."
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "Updated category ID",
+                    "example": "68efd834f1781f960b1e7a6c"
+                  },
+                  "img": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Updated story image"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Story successfully updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully updated a story!"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/story"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "description": "Forbidden — cannot edit someone else's story",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "You can edit only your own stories"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Story not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Story not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -356,6 +954,10 @@
             "description": "Ім’я користувача",
             "example": "Дмитро Романенко"
           },
+          "email": {
+            "type": "string",
+            "example": "ivan@example.com"
+          },
           "avatarUrl": {
             "type": "string",
             "format": "uri",
@@ -372,13 +974,22 @@
             "description": "Короткий опис користувача",
             "example": "Привіт! Я Дмитро. Люблю знаходити приховані перлини у кожній поїздці."
           },
-          "favoriteStories": {
+          "savedStories": {
             "type": "array",
-            "description": "Масив ID історій, доданих у вибране користувачем",
             "items": {
-              "type": "string",
-              "example": "67f1e93c89a31a4524e3ac02"
-            }
+              "type": "string"
+            },
+            "example": [
+              "64a0b91c9f12a81234abcd12"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
           },
           "token": {
             "type": "string",
@@ -450,9 +1061,103 @@
             "example": 5
           }
         }
+      },
+      "updateUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Оновлене ім’я"
+          },
+          "email": {
+            "type": "string",
+            "example": "newemail@example.com"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "example": "https://example.com/avatar.jpg"
+          },
+          "description": {
+            "type": "string",
+            "example": "Короткий опис користувача"
+          },
+          "articlesAmount": {
+            "type": "integer",
+            "example": 5
+          }
+        },
+        "required": []
       }
     },
     "responses": {
+      "400": {
+        "description": "Bad Request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 400
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Bad Request"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 401
+                },
+                "message": {
+                  "type": "string",
+                  "example": "UnauthorizedError"
+                },
+                "data": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token expired"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "500": {
         "description": "Internal Server Error",
         "content": {

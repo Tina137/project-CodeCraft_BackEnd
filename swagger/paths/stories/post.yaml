@@ -1,0 +1,57 @@
+tags:
+  - Stories
+summary: Create a new story
+operationId: createStory
+description: >
+  Creates a new story
+security:
+  - bearerAuth: []
+requestBody:
+  required: true
+  content:
+    multipart/form-data:
+      schema:
+        type: object
+        required:
+          - title
+          - article
+          - category
+        properties:
+          title:
+            type: string
+            description: Story title
+            example: 'Мандрівка Карпатами'
+          article:
+            type: string
+            description: Main text of the story
+            example: 'Неймовірна поїздка в гори з друзями...'
+          category:
+            type: string
+            description: Category ID
+            example: '68efd834f1781f960b1e7a6c'
+          img:
+            type: string
+            format: binary
+            description: Image file for the story
+responses:
+  '201':
+    description: Story successfully created
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 201
+            message:
+              type: string
+              example: Successfully created a story!
+            data:
+              $ref: '../../components/schemas/story.yaml'
+  '400':
+    $ref: '../../components/responses/400.yaml'
+  '401':
+    $ref: '../../components/responses/401.yaml'
+  '500':
+    $ref: '../../components/responses/500.yaml'

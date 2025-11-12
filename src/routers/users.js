@@ -6,10 +6,12 @@ import { optionalAuthenticate } from '../middlewares/optionalAuthenticate.js';
 import {
   getCurrentUserController,
   updateUserInfoController,
+  updateAvatar,
+  addSavedStoryController,
+  removeSavedStoryController,
 } from '../controllers/users.js';
 import { updateUserSchema } from '../validation/users.js';
 import { upload } from '../middlewares/multer.js';
-import { updateAvatar } from '../controllers/users.js';
 
 const router = Router();
 
@@ -24,11 +26,10 @@ router.get(
   optionalAuthenticate,
   ctrlWrapper(getUserByIdController),
 );
-
 router.get('/current', authenticate, ctrlWrapper(getCurrentUserController));
 
 router.patch(
-  '/updateUser/:userId',
+  '/updateUser',
   authenticate,
   validateBody(updateUserSchema),
   ctrlWrapper(updateUserInfoController),
@@ -39,6 +40,17 @@ router.patch(
   authenticate,
   upload.single('avatar'),
   ctrlWrapper(updateAvatar),
+);
+
+router.post(
+  '/saved/:storyId',
+  authenticate,
+  ctrlWrapper(addSavedStoryController),
+);
+router.delete(
+  '/saved/:storyId',
+  authenticate,
+  ctrlWrapper(removeSavedStoryController),
 );
 
 export default router;

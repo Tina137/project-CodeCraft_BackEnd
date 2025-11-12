@@ -25,7 +25,7 @@ export const getUserByIdController = async (req, res) => {
   const storiesData = userStories.map((story) => {
     let isFavorited = false;
 
-    if (req.isAuthenticated && req.user.favoriteStories) {
+    if (req.isAuthenticated && req.user.savedStories) {
       isFavorited = req.user.favoriteStories.includes(story._id.toString());
     }
 
@@ -38,10 +38,6 @@ export const getUserByIdController = async (req, res) => {
 
   res.json({
     user: userData,
-    page: Number(page),
-    limit: Number(limit),
-    totalStories,
-    hasNextPage: skip + userStories.length < totalStories, // булевое поле для фронтенда
     stories: storiesData,
   });
 };

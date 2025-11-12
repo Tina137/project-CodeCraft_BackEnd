@@ -6,6 +6,7 @@ import {
   createStoryController,
   getStoryByIdController,
   updateStoryController,
+  getStoriesController,
 } from '../controllers/stories.js';
 
 import { validateBody } from '../middlewares/validateBody.js';
@@ -15,23 +16,12 @@ import { upload } from '../middlewares/multer.js';
 
 const router = express.Router();
 
-router.use(authenticate);
-
-router.post(
-  '/',
-  upload.single('img'),
-  validateBody(createStorySchema),
-  ctrlWrapper(createStoryController),
-);
-
+router.get('/', ctrlWrapper(getStoriesController));
 router.get('/:storyId', isValidId, ctrlWrapper(getStoryByIdController));
 
-router.patch(
-  '/:storyId',
-  isValidId,
-  upload.single('img'),
-  validateBody(updateStorySchema),
-  ctrlWrapper(updateStoryController),
-);
+router.use(authenticate);
+
+router.post('/', upload.single('img'), validateBody(createStorySchema), ctrlWrapper(createStoryController));
+router.patch('/:storyId', isValidId, upload.single('img'), validateBody(updateStorySchema), ctrlWrapper(updateStoryController));
 
 export default router;

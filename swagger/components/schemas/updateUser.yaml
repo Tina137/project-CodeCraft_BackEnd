@@ -1,0 +1,18 @@
+type: object
+properties:
+  name:
+    type: string
+    example: Оновлене ім’я
+  email:
+    type: string
+    example: newemail@example.com
+  avatarUrl:
+    type: string
+    example: https://example.com/avatar.jpg
+  description:
+    type: string
+    example: Короткий опис користувача
+  articlesAmount:
+    type: integer
+    example: 5
+required: []

@@ -12,6 +12,9 @@ properties:
     type: string
     description: Ім’я користувача
     example: Дмитро Романенко
+  email:
+    type: string
+    example: ivan@example.com
   avatarUrl:
     type: string
     format: uri
@@ -25,12 +28,17 @@ properties:
     type: string
     description: Короткий опис користувача
     example: Привіт! Я Дмитро. Люблю знаходити приховані перлини у кожній поїздці.
-  favoriteStories:
+  savedStories:
     type: array
-    description: Масив ID історій, доданих у вибране користувачем
     items:
       type: string
-      example: 67f1e93c89a31a4524e3ac02
+    example: ['64a0b91c9f12a81234abcd12']
+  createdAt:
+    type: string
+    format: date-time
+  updatedAt:
+    type: string
+    format: date-time
   token:
     type: string
     description: Поточний токен авторизації або null

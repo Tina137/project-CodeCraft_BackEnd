@@ -9,9 +9,14 @@ info:
 tags:
   - name: Public routers
     description: Публічні маршрути доступні без авторизвції
+  - name: Contacts
+    description: Operations about users.
+  - name: Stories
+    description: Operations related to travel stories.
+
 servers:
   - url: http://localhost:3000
-  - url: https://nodejs-hw-mongodb-kxks.onrender.com
+  # - url: https://nodejs-hw-mongodb-kxks.onrender.com
 paths:
   /users:
     get:
@@ -19,7 +24,24 @@ paths:
   /users/{userId}:
     get:
       $ref: ../swagger/paths/users/{userId}/get.yaml
-
+  /users/current:
+    $ref: ../swagger/paths/users/current/get.yaml
+  /users/updateUser:
+    $ref: ../swagger/paths/users/updateUser/patch.yaml
+  /user/saved/{storyId}:
+    post:
+      $ref: '../swagger/paths/users/saved/{storyId}/post.yaml'
+    delete:
+      $ref: '../swagger/paths/users/saved/{storyId}/delete.yaml'
+  /auth/login:
+    post:
+      $ref: ../swagger/paths/auth/login/post.yaml
+  /stories:
+    post:
+      $ref: '../swagger/paths/stories/post.yaml'
+  /stories/{storyId}:
+    patch:
+      $ref: '../swagger/paths/stories/{storyId}/patch.yaml'
 components:
   securitySchemes:
     bearerAuth:
