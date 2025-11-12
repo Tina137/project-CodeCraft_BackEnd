@@ -1,42 +1,15 @@
-import mongoose from 'mongoose';
-import { Schema } from 'mongoose';
+import { model, Schema } from 'mongoose';
 
-const storySchema = new Schema(
+const storiesSchema = new Schema(
   {
-    img: { type: String },
-    title: {
-      type: String,
-      required: true,
-    },
-    article: {
-      type: String,
-      required: true,
-    },
-    category: {
-      type: Schema.Types.ObjectId,
-      ref: 'categories',
-      required: true,
-    },
-    ownerId: {
-      type: Schema.Types.ObjectId,
-      ref: 'users',
-      required: true,
-    },
-    favoriteCount: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
-    date: {
-      type: Date,
-      default: Date.now,
-      required: true,
-    },
+    img: { type: String, required: true, },
+    title: { type: String, required: true, trim: true, },
+    article: { type: String, required: true, },
+    category: { type: Schema.Types.ObjectId, ref: "category", required: true, },
+    ownerId: { type: Schema.Types.ObjectId, ref: "user", required: true, },
+    favoriteCount: { type: Number, default: 0, },
   },
-  {
-    timestamps: true,
-    versionKey: false,
-  },
+  { timestamps: true, versionKey: false },
 );
 
-export const Story = mongoose.model('Story', storySchema);
+export const StoryCollection = model('story', storiesSchema);

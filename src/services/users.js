@@ -1,5 +1,5 @@
 import { UsersCollection } from '../db/models/user.js';
-import { Story } from '../db/models/stories.js';
+import { StoryCollection } from '../db/models/stories.js';
 import createHttpError from 'http-errors';
 import mongoose from 'mongoose';
 
@@ -36,7 +36,7 @@ export const addStoryToSaved = async (userId, storyId) => {
   const user = await UsersCollection.findById(userId);
   if (!user) throw createHttpError(404, 'User not found');
 
-  const story = await Story.findById(storyId);
+  const story = await StoryCollection.findById(storyId);
   if (!story) throw createHttpError(404, 'Story not found');
 
   if (user.savedStories.includes(storyId)) {
@@ -57,7 +57,7 @@ export const removeStoryFromSaved = async (userId, storyId) => {
   const user = await UsersCollection.findById(userId);
   if (!user) throw createHttpError(404, 'User not found');
 
-  const story = await Story.findById(storyId);
+  const story = await StoryCollection.findById(storyId);
   if (!story) throw createHttpError(404, 'Story not found');
 
   if (!user.savedStories.includes(storyId)) {
