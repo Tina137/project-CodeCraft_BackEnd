@@ -1,11 +1,46 @@
 import createHttpError from 'http-errors';
+import { updateUserProfile } from '../services/users.js';
+import { HTTP_STATUS } from '../constants/index.js';
 import {
-  updateUserInfo,
   addStoryToSaved,
   removeStoryFromSaved,
-  updateUserAvatar,
+  getAllUsers,
+  getUserById,
 } from '../services/users.js';
+import { getEnvVar } from '../utils/getEnvVar.js';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
+
+export const getAllUsersController = async (req, res, next) => {
+  try {
+    const { page = 1, limit = 10 } = req.query;
+    const { users, total } = await getAllUsers(Number(page), Number(limit));
+
+    res.status(200).json({
+      message: 'Users fetched successfully',
+      page: Number(page),
+      limit: Number(limit),
+      total,
+      data: users,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUserByIdController = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const user = await getUserById(userId);
+
+    res.status(200).json({
+      message: 'User fetched successfully',
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const getCurrentUserController = async (req, res) => {
   const user = req.user;
@@ -20,41 +55,43 @@ export const getCurrentUserController = async (req, res) => {
   });
 };
 
-export const updateUserInfoController = async (req, res, next) => {
-  const userId = req.user._id;
-  const user = await updateUserInfo(userId, req.body);
-
-  if (!user) {
-    next(createHttpError(404, 'User not found'));
-    return;
-  }
-
-  res.status(200).json({
-    message: 'User was successfully updated!',
-    data: user,
-  });
-};
-
-export const updateAvatar = async (req, res) => {
+export const updateUserProfileController = async (req, res, next) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ message: 'No file uploaded' });
+    const userId = req.user._id;
+    const file = req.file;
+
+    const body = req.body || {};
+
+    let avatarUrl;
+
+    if (file) {
+      if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
+        avatarUrl = await saveFileToCloudinary(file);
+      } else {
+        avatarUrl = await saveFileToUploadDir(file);
+      }
     }
 
-    const baseUrl = await saveFileToCloudinary(req.file);
+    const allowedFields = ['name', 'description', 'email'];
+    const updateData = {};
 
-    const updatedUser = await updateUserAvatar(
-      req.user._id,
-      req.file.filename,
-      baseUrl,
-    );
+    for (const field of allowedFields) {
+      if (body[field] !== undefined) {
+        updateData[field] = body[field];
+      }
+    }
 
-    res.json({
-      message: 'Avatar updated successfully',
-      user: updatedUser,
+    if (avatarUrl) updateData.avatarUrl = avatarUrl;
+
+    const updatedUser = await updateUserProfile(userId, updateData);
+
+    res.status(HTTP_STATUS.OK).json({
+      status: HTTP_STATUS.OK,
+      message: 'User profile successfully updated!',
+      data: updatedUser,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    next(error);
   }
 };
 

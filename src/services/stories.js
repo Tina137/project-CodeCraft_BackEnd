@@ -8,23 +8,28 @@ export const getStories = async ({
   page = 1,
   perPage = 10,
   sortOrder = SORT_ORDER.ASC,
-  sortBy = '_id',
+  sortBy = 'createdAt',
   category,
+  ownerId,
 }) => {
   const limit = perPage;
   const skip = (page - 1) * perPage;
 
   const filter = {};
-  if (category) {
-    filter.category = category;
-  }
+  if (category) filter.category = category;
+  if (ownerId) filter.ownerId = ownerId;
+
+  const allowedSortFields = ['title', 'article', 'category', 'ownerId', 'favoriteCount', 'createdAt'];
+  const sortField = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
+
+  const sortDirection = sortOrder.toLowerCase() === 'desc' ? -1 : 1;
 
   const storiesCount = await StoryCollection.countDocuments(filter);
 
   const stories = await StoryCollection.find(filter)
     .skip(skip)
     .limit(limit)
-    .sort({ [sortBy]: sortOrder })
+    .sort({ [sortField]: sortDirection })
     .exec();
 
   const paginationData = calculatePaginationData(storiesCount, perPage, page);

@@ -1,52 +1,53 @@
 import { UsersCollection } from '../db/models/user.js';
 import { StoryCollection } from '../db/models/stories.js';
 import createHttpError from 'http-errors';
-import mongoose from 'mongoose';
 
-export const updateUserInfo = async (userId, payload) => {
-  const userUpdate = await UsersCollection.findOneAndUpdate(
-    { _id: userId },
-    payload,
-    { new: true },
-  );
+export const getAllUsers = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
 
-  return userUpdate;
+  const [users, total] = await Promise.all([
+    UsersCollection.find({}, '-password -savedStories -__v')
+      .skip(skip)
+      .limit(limit),
+    UsersCollection.countDocuments(),
+  ]);
+
+  return { users, total };
 };
 
-// функція для оновлення аватару
-export const updateUserAvatar = async (userId, filename, baseUrl) => {
-  const avatarPath = `/uploads/avatars/${filename}`;
-  const fullUrl = `${baseUrl}${avatarPath}`;
+export const getUserById = async (userId) => {
+  const user = await UsersCollection.findById(userId, '-password -savedStories -__v');
+  if (!user) throw createHttpError(404, 'User not found');
 
-  const updatedUser = await UsersCollection.findByIdAndUpdate(
-    userId,
-    { avatarUrl: fullUrl },
-    { new: true },
-  );
+  return user;
+};
 
-  return updatedUser;
+export const updateUserProfile = async (userId, updateData) => {
+  const user = await UsersCollection.findById(userId);
+  if (!user) throw createHttpError(404, 'User not found');
+
+  Object.assign(user, updateData);
+  await user.save();
+
+  return user;
 };
 
 // Додає історію до збережених користувача
 export const addStoryToSaved = async (userId, storyId) => {
-  if (!mongoose.Types.ObjectId.isValid(storyId)) {
-    throw createHttpError(400, 'Invalid story ID format');
-  }
-
   const user = await UsersCollection.findById(userId);
   if (!user) throw createHttpError(404, 'User not found');
 
   const story = await StoryCollection.findById(storyId);
   if (!story) throw createHttpError(404, 'Story not found');
 
-  if (user.savedStories.includes(storyId)) {
+  if (user.savedStories.some(id => id.toString() === storyId)) {
     throw createHttpError(400, 'Story already saved');
   }
 
   user.savedStories.push(storyId);
   await user.save();
 
-  story.favoriteCount += 1;
+  story.favoriteCount = (story.favoriteCount || 0) + 1;
   await story.save();
 
   return user.savedStories;
@@ -60,16 +61,15 @@ export const removeStoryFromSaved = async (userId, storyId) => {
   const story = await StoryCollection.findById(storyId);
   if (!story) throw createHttpError(404, 'Story not found');
 
-  if (!user.savedStories.includes(storyId)) {
+  const isSaved = user.savedStories.some(id => id.toString() === storyId);
+  if (!isSaved) {
     throw createHttpError(400, 'Story not in saved list');
   }
 
-  user.savedStories = user.savedStories.filter(
-    (id) => id.toString() !== storyId,
-  );
+  user.savedStories = user.savedStories.filter(id => id.toString() !== storyId);
   await user.save();
 
-  story.favoriteCount = Math.max(0, story.favoriteCount - 1);
+  story.favoriteCount = Math.max(0, (story.favoriteCount || 0) - 1);
   await story.save();
 
   return user.savedStories;
