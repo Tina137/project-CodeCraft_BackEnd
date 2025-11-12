@@ -10,6 +10,7 @@ import {
   updateUserProfileController,
   getAllUsersController,
   getUserByIdController,
+  updateAvatarController,
 } from '../controllers/users.js';
 import { updateUserSchema } from '../validation/users.js';
 import { upload } from '../middlewares/multer.js';
@@ -23,6 +24,7 @@ router.get('/current', authenticate, ctrlWrapper(getCurrentUserController));
 router.get('/:userId', isValidId, ctrlWrapper(getUserByIdController));
 
 router.patch('/updateUser', authenticate, upload.single('avatar'), validateBody(updateUserSchema), ctrlWrapper(updateUserProfileController));
+router.patch('/avatar', authenticate, upload.single('avatar'), ctrlWrapper(updateAvatarController));
 
 router.patch('/saved/:storyId', isValidId, authenticate, ctrlWrapper(addSavedStoryController));
 router.delete('/saved/:storyId', isValidId, authenticate, ctrlWrapper(removeSavedStoryController));

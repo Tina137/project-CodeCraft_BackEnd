@@ -1,7 +1,11 @@
 import { UsersCollection } from '../db/models/user.js';
 import { StoryCollection } from '../db/models/stories.js';
 import createHttpError from 'http-errors';
+import { getEnvVar } from '../utils/getEnvVar.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
 
+// Отримати всіх користувачів з пагінацією
 export const getAllUsers = async (page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
 
@@ -15,6 +19,7 @@ export const getAllUsers = async (page = 1, limit = 10) => {
   return { users, total };
 };
 
+// Отримати одного користувача за id
 export const getUserById = async (userId) => {
   const user = await UsersCollection.findById(userId, '-password -savedStories -__v');
   if (!user) throw createHttpError(404, 'User not found');
@@ -22,14 +27,55 @@ export const getUserById = async (userId) => {
   return user;
 };
 
-export const updateUserProfile = async (userId, updateData) => {
+// Оновлення профілю користувача (ім'я, email, description, аватар)
+export const updateUserProfile = async (userId, updateData, file) => {
   const user = await UsersCollection.findById(userId);
   if (!user) throw createHttpError(404, 'User not found');
 
-  Object.assign(user, updateData);
+  const allowedFields = ['name', 'description', 'email'];
+  const dataToUpdate = {};
+
+  for (const field of allowedFields) {
+    if (updateData[field] !== undefined) dataToUpdate[field] = updateData[field];
+  }
+
+  if (file) {
+    let avatarUrl;
+    if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
+      avatarUrl = await saveFileToCloudinary(file);
+    } else {
+      avatarUrl = await saveFileToUploadDir(file);
+    }
+    dataToUpdate.avatarUrl = avatarUrl;
+  }
+
+  Object.assign(user, dataToUpdate);
   await user.save();
 
   return user;
+};
+
+// функція для оновлення аватару
+export const updateUserAvatar = async (userId, file) => {
+  if (!file) throw createHttpError(400, 'No file provided');
+
+  let avatarUrl;
+
+  if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
+    avatarUrl = await saveFileToCloudinary(file);
+  } else {
+    avatarUrl = await saveFileToUploadDir(file);
+  }
+
+  const updatedUser = await UsersCollection.findByIdAndUpdate(
+    userId,
+    { avatarUrl },
+    { new: true, select: '-password -__v -savedStories' }
+  );
+
+  if (!updatedUser) throw createHttpError(404, 'User not found');
+
+  return updatedUser;
 };
 
 // Додає історію до збережених користувача

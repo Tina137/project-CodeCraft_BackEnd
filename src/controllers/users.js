@@ -1,22 +1,25 @@
 import createHttpError from 'http-errors';
-import { updateUserProfile } from '../services/users.js';
+// import { updateUserProfile } from '../services/users.js';
 import { HTTP_STATUS } from '../constants/index.js';
 import {
-  addStoryToSaved,
-  removeStoryFromSaved,
   getAllUsers,
   getUserById,
+  updateUserProfile,
+  updateUserAvatar,
+  addStoryToSaved,
+  removeStoryFromSaved,
 } from '../services/users.js';
-import { getEnvVar } from '../utils/getEnvVar.js';
-import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
-import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
+// import { getEnvVar } from '../utils/getEnvVar.js';
+// import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+// import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
 
 export const getAllUsersController = async (req, res, next) => {
   try {
     const { page = 1, limit = 10 } = req.query;
     const { users, total } = await getAllUsers(Number(page), Number(limit));
 
-    res.status(200).json({
+    res.status(HTTP_STATUS.OK).json({
+      status: HTTP_STATUS.OK,
       message: 'Users fetched successfully',
       page: Number(page),
       limit: Number(limit),
@@ -33,7 +36,8 @@ export const getUserByIdController = async (req, res, next) => {
     const { userId } = req.params;
     const user = await getUserById(userId);
 
-    res.status(200).json({
+    res.status(HTTP_STATUS.OK).json({
+      status: HTTP_STATUS.OK,
       message: 'User fetched successfully',
       data: user,
     });
@@ -43,51 +47,72 @@ export const getUserByIdController = async (req, res, next) => {
 };
 
 export const getCurrentUserController = async (req, res) => {
-  const user = req.user;
+  try {
+    const user = req.user;
 
-  if (!user) {
-    throw createHttpError(401, 'Not authorized');
+    if (!user) throw createHttpError(401, 'Not authorized');
+
+    res.status(HTTP_STATUS.OK).json({
+      status: HTTP_STATUS.OK,
+      message: 'Current user fetched successfully',
+      data: user,
+    });
+  } catch (error) {
+    next(error);
   }
-
-  res.status(200).json({
-    message: 'Current user fetched successfully',
-    data: user,
-  });
 };
 
 export const updateUserProfileController = async (req, res, next) => {
   try {
     const userId = req.user._id;
     const file = req.file;
-
     const body = req.body || {};
 
-    let avatarUrl;
+    const updatedUser = await updateUserProfile(userId, body, file);
 
-    if (file) {
-      if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
-        avatarUrl = await saveFileToCloudinary(file);
-      } else {
-        avatarUrl = await saveFileToUploadDir(file);
-      }
-    }
+    // let avatarUrl;
 
-    const allowedFields = ['name', 'description', 'email'];
-    const updateData = {};
+    // if (file) {
+    //   if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
+    //     avatarUrl = await saveFileToCloudinary(file);
+    //   } else {
+    //     avatarUrl = await saveFileToUploadDir(file);
+    //   }
+    // }
 
-    for (const field of allowedFields) {
-      if (body[field] !== undefined) {
-        updateData[field] = body[field];
-      }
-    }
+    // const allowedFields = ['name', 'description', 'email'];
+    // const updateData = {};
 
-    if (avatarUrl) updateData.avatarUrl = avatarUrl;
+    // for (const field of allowedFields) {
+    //   if (body[field] !== undefined) {
+    //     updateData[field] = body[field];
+    //   }
+    // }
 
-    const updatedUser = await updateUserProfile(userId, updateData);
+    // if (avatarUrl) updateData.avatarUrl = avatarUrl;
+
+    // const updatedUser = await updateUserProfile(userId, updateData);
 
     res.status(HTTP_STATUS.OK).json({
       status: HTTP_STATUS.OK,
       message: 'User profile successfully updated!',
+      data: updatedUser,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateAvatarController = async (req, res, next) => {
+  try {
+    const file = req.file;
+    const userId = req.user._id;
+
+    const updatedUser = await updateUserAvatar(userId, file);
+
+    res.status(HTTP_STATUS.OK).json({
+      status: HTTP_STATUS.OK,
+      message: 'Avatar updated successfully',
       data: updatedUser,
     });
   } catch (error) {
@@ -100,7 +125,8 @@ export const addSavedStoryController = async (req, res, next) => {
     const { storyId } = req.params;
     const savedStories = await addStoryToSaved(req.user._id, storyId);
 
-    res.status(200).json({
+    res.status(HTTP_STATUS.OK).json({
+      status: HTTP_STATUS.OK,
       message: 'Story added to saved',
       savedStories,
     });
@@ -114,7 +140,8 @@ export const removeSavedStoryController = async (req, res, next) => {
     const { storyId } = req.params;
     const savedStories = await removeStoryFromSaved(req.user._id, storyId);
 
-    res.status(200).json({
+    res.status(HTTP_STATUS.OK).json({
+      status: HTTP_STATUS.OK,
       message: 'Story removed from saved',
       savedStories,
     });
