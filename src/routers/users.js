@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { validateBody } from '../middlewares/validateBody.js';
 import { authenticate } from '../middlewares/authenticate.js';
-// import { optionalAuthenticate } from '../middlewares/optionalAuthenticate.js'; // 
+// import { optionalAuthenticate } from '../middlewares/optionalAuthenticate.js'; //
 import {
   getCurrentUserController,
   updateUserInfoController,
@@ -20,14 +20,23 @@ import {
 const router = Router();
 
 router.get('/', ctrlWrapper(getUsersListController));
-router.get('/:userId', ctrlWrapper(getUserByIdController));
 
+router.get('/current', authenticate, ctrlWrapper(getCurrentUserController));
+router.get('/:userId', ctrlWrapper(getUserByIdController));
 router.use(authenticate);
 
-router.get('/current', ctrlWrapper(getCurrentUserController));
-
-router.patch('/updateUser', upload.single('avatarUrl'), validateBody(updateUserSchema), ctrlWrapper(updateUserInfoController));
-router.patch('/avatar', upload.single('avatar'), ctrlWrapper(updateAvatar));
+router.patch(
+  '/updateUser',
+  upload.single('avatarUrl'),
+  validateBody(updateUserSchema),
+  ctrlWrapper(updateUserInfoController),
+);
+router.patch(
+  '/avatar',
+  authenticate,
+  upload.single('avatar'),
+  ctrlWrapper(updateAvatar),
+);
 
 router.post('/saved/:storyId', ctrlWrapper(addSavedStoryController));
 router.delete('/saved/:storyId', ctrlWrapper(removeSavedStoryController));
