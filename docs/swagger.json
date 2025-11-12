@@ -12,18 +12,433 @@
   "servers": [
     {
       "url": "http://localhost:3000"
-    },
-    {
-      "url": "https://nodejs-hw-mongodb-kxks.onrender.com"
     }
   ],
   "tags": [
     {
+      "name": "Public routers",
+      "description": "Публічні маршрути доступні без авторизвції"
+    },
+    {
       "name": "Contacts",
       "description": "Operations about users."
+    },
+    {
+      "name": "Stories",
+      "description": "Operations related to travel stories."
     }
   ],
   "paths": {
+    "/users": {
+      "get": {
+        "tags": [
+          "Public routers"
+        ],
+        "summary": "Get list of all users",
+        "operationId": "getUsersList",
+        "description": "Повертає публічний список усіх користувачів з бази. Маршрут не вимагає авторизації. Дані включають основну інформацію про користувача, без паролю. Є пагінація з параметрами `page` і `limit`.\n",
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1
+            },
+            "description": "Номер сторінки (починається з 1)"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 8,
+              "minimum": 1
+            },
+            "description": "Кількість користувачів на сторінці"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список користувачів успішно отримано",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "page",
+                    "limit",
+                    "totalUsers",
+                    "hasNextPage",
+                    "users"
+                  ],
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "limit": {
+                      "type": "integer",
+                      "example": 8
+                    },
+                    "totalUsers": {
+                      "type": "integer",
+                      "example": 57
+                    },
+                    "hasNextPage": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "users": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/user"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Опис помилки",
+                      "example": "Internal server error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "tags": [
+          "Public routers"
+        ],
+        "summary": "Get user profile by ID",
+        "operationId": "getUserById",
+        "description": "Get user profile by ID with optional authentication. Without token canFavorite = false. With Bearer token canFavorite = true, and stories mark isFavorited.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "description": "ID автора, чиї дані запитуються",
+            "schema": {
+              "type": "string",
+              "example": "6881563901add19ee16fcff5"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "description": "Номер сторінки (пагінація)",
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "example": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "description": "Кільість елементів на сторінці",
+            "schema": {
+              "type": "integer",
+              "default": 6,
+              "example": 6
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully get user profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully get user profile"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/user"
+                        },
+                        "page": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "example": 6
+                        },
+                        "totalStories": {
+                          "type": "integer",
+                          "example": 13
+                        },
+                        "hasNextPage": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "stories": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/story"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "notAuthenticated": {
+                    "summary": "Example response without authentication",
+                    "value": {
+                      "status": 200,
+                      "message": "Successfully get user profile",
+                      "data": {
+                        "user": {
+                          "_id": "6881563901add19ee16fcff5",
+                          "name": "Дмитро Романенко",
+                          "avatarUrl": "https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcff5.webp",
+                          "description": "Привіт! Я Дмитро...",
+                          "articlesAmount": 13,
+                          "favoriteStories": [],
+                          "canFavorite": false
+                        },
+                        "page": 1,
+                        "limit": 6,
+                        "totalStories": 13,
+                        "hasNextPage": true,
+                        "stories": [
+                          {
+                            "_id": "68498236a100312bea07903b",
+                            "title": "Іспанія: Гауді і архітектура Барселони",
+                            "article": "Барселона — місто...",
+                            "category": "68fb50c80ae91338641121f2",
+                            "ownerId": "6881563901add19ee16fcff5",
+                            "img": "https://ftp.goit.study/img/travel-blog/68498236a100312bea07903b.webp",
+                            "date": "2024-11-06T00:00:00.000Z",
+                            "favoriteCount": 15,
+                            "canFavorite": false,
+                            "isFavorited": false
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "authenticated": {
+                    "summary": "Example response with authentication",
+                    "value": {
+                      "status": 200,
+                      "message": "Successfully get user profile",
+                      "data": {
+                        "user": {
+                          "_id": "6881563901add19ee16fcff5",
+                          "name": "Дмитро Романенко",
+                          "avatarUrl": "...",
+                          "description": "...",
+                          "articlesAmount": 13,
+                          "favoriteStories": [
+                            "68498236a100312bea07903b"
+                          ],
+                          "canFavorite": true
+                        },
+                        "page": 1,
+                        "limit": 6,
+                        "totalStories": 13,
+                        "hasNextPage": true,
+                        "stories": [
+                          {
+                            "_id": "68498236a100312bea07903b",
+                            "title": "Іспанія: Гауді і архітектура Барселони",
+                            "article": "...",
+                            "category": "68fb50c80ae91338641121f2",
+                            "ownerId": "6881563901add19ee16fcff5",
+                            "img": "...",
+                            "date": "2024-11-06T00:00:00.000Z",
+                            "favoriteCount": 15,
+                            "canFavorite": true,
+                            "isFavorited": true
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/users/current": {
+      "get": {
+        "operationId": "getCurrentUser",
+        "summary": "Get current user info",
+        "description": "Return current authenticated user info",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User info is successfully fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Current user fetched successfully"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/user"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/users/updateUser": {
+      "patch": {
+        "operationId": "updateUserInfo",
+        "summary": "Update user info",
+        "description": "Updates current user info. Authentication is required.",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/updateUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User info updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User was successfully updated!"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/user"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
     "/user/saved/{storyId}": {
       "post": {
         "tags": [
@@ -41,7 +456,7 @@
             "name": "storyId",
             "in": "path",
             "required": true,
-            "description": "ID історії, яку потрібно зберегти / ID of the story to save",
+            "description": "ID of the story to save",
             "schema": {
               "type": "string",
               "example": "68498236a100312bea079008"
@@ -292,6 +707,225 @@
           }
         }
       }
+    },
+    "/stories": {
+      "post": {
+        "tags": [
+          "Stories"
+        ],
+        "summary": "Create a new story",
+        "operationId": "createStory",
+        "description": "Creates a new story\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "article",
+                  "category"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Story title",
+                    "example": "Мандрівка Карпатами"
+                  },
+                  "article": {
+                    "type": "string",
+                    "description": "Main text of the story",
+                    "example": "Неймовірна поїздка в гори з друзями..."
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "Category ID",
+                    "example": "68efd834f1781f960b1e7a6c"
+                  },
+                  "img": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Image file for the story"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Story successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully created a story!"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/story"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/stories/{storyId}": {
+      "patch": {
+        "tags": [
+          "Stories"
+        ],
+        "summary": "Update a story",
+        "operationId": "updateStory",
+        "description": "Updates an existing story\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "storyId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the story to update",
+            "schema": {
+              "type": "string",
+              "example": "68efd834f1781f960b1e7a6c"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Updated story title",
+                    "example": "Мандрівка Карпатами"
+                  },
+                  "article": {
+                    "type": "string",
+                    "description": "Updated story content",
+                    "example": "Неймовірна поїздка в гори з друзями..."
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "Updated category ID",
+                    "example": "68efd834f1781f960b1e7a6c"
+                  },
+                  "img": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Updated story image"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Story successfully updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully updated a story!"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/story"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "description": "Forbidden — cannot edit someone else's story",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "You can edit only your own stories"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Story not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Story not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -301,7 +935,192 @@
         "scheme": "bearer"
       }
     },
+    "schemas": {
+      "user": {
+        "type": "object",
+        "required": [
+          "_id",
+          "name",
+          "description"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Унікальний ідентифікатор користувача",
+            "example": "6881563901add19ee16fcff5"
+          },
+          "name": {
+            "type": "string",
+            "description": "Ім’я користувача",
+            "example": "Дмитро Романенко"
+          },
+          "email": {
+            "type": "string",
+            "example": "ivan@example.com"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL до аватара користувача",
+            "example": "https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcff5.webp"
+          },
+          "articlesAmount": {
+            "type": "integer",
+            "description": "Кількість опублікованих історій користувача",
+            "example": 13
+          },
+          "description": {
+            "type": "string",
+            "description": "Короткий опис користувача",
+            "example": "Привіт! Я Дмитро. Люблю знаходити приховані перлини у кожній поїздці."
+          },
+          "savedStories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "64a0b91c9f12a81234abcd12"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "token": {
+            "type": "string",
+            "description": "Поточний токен авторизації або null",
+            "example": null
+          }
+        }
+      },
+      "story": {
+        "type": "object",
+        "required": [
+          "_id",
+          "img",
+          "title",
+          "article",
+          "category",
+          "ownerId",
+          "date",
+          "favoriteCount"
+        ],
+        "properties": {
+          "_id": {
+            "description": "Story's id",
+            "type": "string",
+            "example": "65e4decdd286b30065d54af9"
+          },
+          "img": {
+            "type": "string",
+            "description": "Story's photo",
+            "default": null,
+            "format": "binary",
+            "example": "https://res.cloudinary.com/dha4xvgfi/image/upload/v1759947947/aclxd7sbpsrb8hviowbe.jpg"
+          },
+          "title": {
+            "description": "Story's title",
+            "type": "string",
+            "example": "Мадагаскар: острів дивовижних створінь"
+          },
+          "article": {
+            "description": "Storyt's article",
+            "type": "string",
+            "example": "Мадагаскар — це планета в мініатюрі. Ми побачили баобаби, що підносяться до неба, і лемурів, які стрибали просто поруч. Подорожували як на джипах, так і на човнах, щоб дістатися віддалених сіл. Місцеві жителі ділилися історіями про свою культуру, що відрізняється від усіх африканських. Найбільше вразила «Алея баобабів» на заході сонця — картина, яку неможливо забути. Мадагаскар — це місце, де відчуваєш силу і різноманіття природи."
+          },
+          "category": {
+            "description": "Story category id",
+            "type": "string",
+            "example": "68efd834f1781f960b1e7a6c"
+          },
+          "ownerId": {
+            "description": "Story owner id",
+            "type": "string",
+            "example": "68efd834f1781f960b1e7a6c"
+          },
+          "contactType": {
+            "description": "Story's type",
+            "type": "string",
+            "enum": [
+              "work",
+              "home",
+              "personal"
+            ]
+          },
+          "date": {
+            "type": "string",
+            "example": "2024-08-28"
+          },
+          "favoriteCount": {
+            "type": "number",
+            "example": 5
+          }
+        }
+      },
+      "updateUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Оновлене ім’я"
+          },
+          "email": {
+            "type": "string",
+            "example": "newemail@example.com"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "example": "https://example.com/avatar.jpg"
+          },
+          "description": {
+            "type": "string",
+            "example": "Короткий опис користувача"
+          },
+          "articlesAmount": {
+            "type": "integer",
+            "example": 5
+          }
+        },
+        "required": []
+      }
+    },
     "responses": {
+      "400": {
+        "description": "Bad Request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 400
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Bad Request"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "401": {
         "description": "Unauthorized error",
         "content": {

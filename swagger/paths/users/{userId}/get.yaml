@@ -1,0 +1,154 @@
+tags:
+  - Public routers
+summary: Get user profile by ID
+operationId: getUserById
+description: Get user profile by ID with optional authentication. Without token canFavorite = false. With Bearer token canFavorite = true, and stories mark isFavorited.
+security:
+  - bearerAuth: []
+
+parameters:
+  - in: path
+    name: userId
+    required: true
+    description: ID автора, чиї дані запитуються
+    schema:
+      type: string
+      example: '6881563901add19ee16fcff5'
+
+  - in: query
+    name: page
+    required: false
+    description: Номер сторінки (пагінація)
+    schema:
+      type: integer
+      default: 1
+      example: 1
+
+  - in: query
+    name: limit
+    required: false
+    description: Кільість елементів на сторінці
+    schema:
+      type: integer
+      default: 6
+      example: 6
+
+responses:
+  '200':
+    description: Successfully get user profile
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully get user profile
+            data:
+              type: object
+              properties:
+                user:
+                  $ref: '../../../components/schemas/user.yaml'
+                page:
+                  type: integer
+                  example: 1
+                limit:
+                  type: integer
+                  example: 6
+                totalStories:
+                  type: integer
+                  example: 13
+                hasNextPage:
+                  type: boolean
+                  example: true
+                stories:
+                  type: array
+                  items:
+                    $ref: '../../../components/schemas/story.yaml'
+        examples:
+          notAuthenticated:
+            summary: Example response without authentication
+            value:
+              status: 200
+              message: Successfully get user profile
+              data:
+                user:
+                  _id: '6881563901add19ee16fcff5'
+                  name: 'Дмитро Романенко'
+                  avatarUrl: 'https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcff5.webp'
+                  description: 'Привіт! Я Дмитро...'
+                  articlesAmount: 13
+                  favoriteStories: []
+                  canFavorite: false
+                page: 1
+                limit: 6
+                totalStories: 13
+                hasNextPage: true
+                stories:
+                  - _id: '68498236a100312bea07903b'
+                    title: 'Іспанія: Гауді і архітектура Барселони'
+                    article: 'Барселона — місто...'
+                    category: '68fb50c80ae91338641121f2'
+                    ownerId: '6881563901add19ee16fcff5'
+                    img: 'https://ftp.goit.study/img/travel-blog/68498236a100312bea07903b.webp'
+                    date: '2024-11-06T00:00:00.000Z'
+                    favoriteCount: 15
+                    canFavorite: false
+                    isFavorited: false
+
+          authenticated:
+            summary: Example response with authentication
+            value:
+              status: 200
+              message: Successfully get user profile
+              data:
+                user:
+                  _id: '6881563901add19ee16fcff5'
+                  name: 'Дмитро Романенко'
+                  avatarUrl: '...'
+                  description: '...'
+                  articlesAmount: 13
+                  favoriteStories: ['68498236a100312bea07903b']
+                  canFavorite: true
+                page: 1
+                limit: 6
+                totalStories: 13
+                hasNextPage: true
+                stories:
+                  - _id: '68498236a100312bea07903b'
+                    title: 'Іспанія: Гауді і архітектура Барселони'
+                    article: '...'
+                    category: '68fb50c80ae91338641121f2'
+                    ownerId: '6881563901add19ee16fcff5'
+                    img: '...'
+                    date: '2024-11-06T00:00:00.000Z'
+                    favoriteCount: 15
+                    canFavorite: true
+                    isFavorited: true
+
+  '404':
+    description: User not found
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+          properties:
+            status:
+              type: integer
+              example: 404
+            message:
+              type: string
+              example: User not found
+
+  '500':
+    $ref: '../../../components/responses/500.yaml'

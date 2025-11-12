@@ -9,7 +9,6 @@ import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 
 export const getCurrentUserController = async (req, res) => {
   const user = req.user;
-  console.log(user);
 
   if (!user) {
     throw createHttpError(401, 'Not authorized');

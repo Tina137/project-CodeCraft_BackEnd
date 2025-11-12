@@ -1,25 +1,45 @@
 type: object
+required:
+  - _id
+  - name
+  - description
 properties:
   _id:
     type: string
-    example: 64a0b91c9f12a81234abcd12
+    description: Унікальний ідентифікатор користувача
+    example: 6881563901add19ee16fcff5
   name:
     type: string
-    example: Іван Петренко
+    description: Ім’я користувача
+    example: Дмитро Романенко
   email:
     type: string
     example: ivan@example.com
   avatarUrl:
     type: string
-    example: /uploads/avatars/ivan.jpg
+    format: uri
+    description: URL до аватара користувача
+    example: https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcff5.webp
+  articlesAmount:
+    type: integer
+    description: Кількість опублікованих історій користувача
+    example: 13
+  description:
+    type: string
+    description: Короткий опис користувача
+    example: Привіт! Я Дмитро. Люблю знаходити приховані перлини у кожній поїздці.
   savedStories:
     type: array
     items:
       type: string
-    example: ["64a0b91c9f12a81234abcd12"]
+    example: ['64a0b91c9f12a81234abcd12']
   createdAt:
     type: string
     format: date-time
   updatedAt:
     type: string
     format: date-time
+  token:
+    type: string
+    description: Поточний токен авторизації або null
+    example: null
