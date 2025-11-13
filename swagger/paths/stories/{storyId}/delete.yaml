@@ -1,0 +1,28 @@
+summary: Delete a story by ID
+description: Deletes a story by its ID. Requires authentication. Only the owner of the story can delete it. Also removes the story ID from all users' saved stories and decrements the user's article count.
+operationId: deleteStory
+tags:
+  - Stories
+security:
+  - cookieAuth: []
+parameters:
+  - name: storyId
+    in: path
+    description: Story ID
+    required: true
+    schema:
+      type: string
+      example: '64f1a2b3c456789012345678'
+responses:
+  '200':
+    $ref: '../../../components/responses/200.yaml'
+  '400':
+    $ref: '../../../components/responses/400.yaml'
+  '401':
+    $ref: '../../../components/responses/401.yaml'
+  '403':
+    $ref: '../../../components/responses/403.yaml'
+  '404':
+    $ref: '../../../components/responses/404.yaml'
+  '500':
+    $ref: '../../../components/responses/500.yaml'

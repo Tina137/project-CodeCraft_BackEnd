@@ -763,6 +763,51 @@
             "$ref": "#/components/responses/404"
           }
         }
+      },
+      "delete": {
+        "summary": "Delete a story by ID",
+        "description": "Deletes a story by its ID. Requires authentication. Only the owner of the story can delete it. Also removes the story ID from all users' saved stories and decrements the user's article count.",
+        "operationId": "deleteStory",
+        "tags": [
+          "Stories"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "storyId",
+            "in": "path",
+            "description": "Story ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "64f1a2b3c456789012345678"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
       }
     }
   },
@@ -1071,6 +1116,30 @@
                 "status",
                 "message"
               ]
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 500
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Internal Server Error"
+                }
+              }
             }
           }
         }

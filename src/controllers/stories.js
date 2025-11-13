@@ -1,10 +1,9 @@
 import createHttpError from 'http-errors';
-import { getStories } from '../services/stories.js';
 import { HTTP_STATUS } from '../constants/index.js';
 import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 import { getEnvVar } from '../utils/getEnvVar.js';
-import { createStory, getStoryById, updateStory } from '../services/stories.js';
+import { getStories, createStory, getStoryById, updateStory, deleteStory } from '../services/stories.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 
@@ -120,6 +119,23 @@ export const updateStoryController = async (req, res, next) => {
       status: HTTP_STATUS.OK,
       message: 'Successfully updated a story!',
       data: updatedStory,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteStoryController = async (req, res, next) => {
+  try {
+    const { storyId } = req.params;
+    const userId = req.user._id;
+
+    const deletedStory = await deleteStory(storyId, userId);
+
+    res.json({
+      status: HTTP_STATUS.OK,
+      message: 'Story successfully deleted!',
+      data: deletedStory,
     });
   } catch (error) {
     next(error);

@@ -6,6 +6,7 @@ import {
   getStoryByIdController,
   updateStoryController,
   getStoriesController,
+  deleteStoryController,
 } from '../controllers/stories.js';
 
 import { validateBody } from '../middlewares/validateBody.js';
@@ -22,5 +23,6 @@ router.use(authenticate);
 
 router.post('/', upload.single('img'), validateBody(createStorySchema), ctrlWrapper(createStoryController));
 router.patch('/:storyId', isValidId, upload.single('img'), validateBody(updateStorySchema), ctrlWrapper(updateStoryController));
+router.delete('/:storyId', isValidId, ctrlWrapper(deleteStoryController));
 
 export default router;
