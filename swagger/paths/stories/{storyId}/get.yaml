@@ -1,0 +1,21 @@
+summary: Get story by ID
+description: Retrieves a story by its ID. Does not require authentication.
+operationId: getStoryById
+tags:
+  - Stories
+security: []
+parameters:
+  - name: storyId
+    in: path
+    description: Story ID
+    required: true
+    schema:
+      type: string
+      example: '64f1a2b3c456789012345678'
+responses:
+  '200':
+    $ref: '../../../components/responses/200.yaml'
+  '400':
+    $ref: '../../../components/responses/400.yaml'
+  '404':
+    $ref: '../../../components/responses/404.yaml'

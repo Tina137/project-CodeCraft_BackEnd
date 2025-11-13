@@ -1,6 +1,6 @@
-summary: Delete story from user's saved list
-description: Deletes a story from the authenticated user's `savedStories` list by story ID. Requires authorization.
-operationId: deleteSavedStory
+summary: Save story to user's saved list
+description: Saves a story to the authenticated user's `savedStories` list by story ID. Requires authorization.
+operationId: saveStory
 tags:
   - Users
 security:
@@ -8,7 +8,7 @@ security:
 parameters:
   - name: storyId
     in: path
-    description: ID of the story to delete
+    description: ID of the story to save
     required: true
     schema:
       type: string

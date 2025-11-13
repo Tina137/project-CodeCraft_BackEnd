@@ -26,7 +26,7 @@ router.get('/:userId', isValidId, ctrlWrapper(getUserByIdController));
 router.patch('/updateUser', authenticate, validateBody(updateUserSchema), ctrlWrapper(updateUserProfileController));
 router.patch('/avatar', authenticate, upload.single('avatar'), ctrlWrapper(updateAvatarController));
 
-router.patch('/saved/:storyId', isValidId, authenticate, ctrlWrapper(addSavedStoryController));
+router.post('/saved/:storyId', isValidId, authenticate, ctrlWrapper(addSavedStoryController));
 router.delete('/saved/:storyId', isValidId, authenticate, ctrlWrapper(removeSavedStoryController));
 
 export default router;

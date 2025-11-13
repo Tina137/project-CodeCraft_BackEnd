@@ -1,4 +1,4 @@
-description: Bad Request
+description: Bad Request - uncorrect data or validation error
 content:
   application/json:
     schema:
@@ -6,15 +6,17 @@ content:
       required:
         - status
         - message
-        - data
       properties:
         status:
           type: integer
           example: 400
         message:
           type: string
-          example: Bad Request
-        data:
+          example: 'The Email field must be a valid email address.'
+        errors:
           type: array
           items:
             type: string
+          example:
+            - 'The Name field must contain at least 3 characters.'
+            - 'The Password field is required.'

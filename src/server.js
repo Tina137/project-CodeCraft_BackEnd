@@ -1,5 +1,4 @@
 import 'dotenv/config';
-
 import express from 'express';
 import cors from 'cors';
 import pino from 'pino-http';
@@ -17,7 +16,10 @@ const PORT = Number(getEnvVar('PORT', '3000'));
 
 export default function setupServer() {
   app.use(express.json());
-  app.use(cors());
+  app.use(cors({
+    origin: getEnvVar('APP_DOMAIN', 'http://localhost:3000'),
+    credentials: true,
+  }));
   app.use(
     pino({
       transport: {

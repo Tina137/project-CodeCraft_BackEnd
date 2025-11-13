@@ -1,7 +1,7 @@
 post:
-  summary: User Login
-  description: Authenticate a user and return a JWT token.
-  operationId: loginUser
+  summary: User Registration
+  description: Register a new user with name, email, and password.
+  operationId: registerUser
   tags:
     - Auth
   security: []
@@ -12,6 +12,10 @@ post:
         schema:
           type: object
           properties:
+            name:
+              type: string
+              description: The user's name.
+              example: 'Ivan Petrenko'
             email:
               type: string
               description: The user's email address.
@@ -21,12 +25,13 @@ post:
               description: The user's password.
               example: 'strongpassword123'
           required:
+            - name
             - email
             - password
   responses:
-    '200':
-      $ref: '../../../components/responses/200.yaml'
+    '201':
+      $ref: '../../../components/responses/201.yaml'
     '400':
       $ref: '../../../components/responses/400.yaml'
-    '401':
-      $ref: '../../../components/responses/401.yaml'
+    '409':
+      $ref: '../../../components/responses/409.yaml'
