@@ -6,42 +6,39 @@ required:
   - article
   - category
   - ownerId
-  - date
-  - favoriteCount
 properties:
   _id:
-    description: "Story's id"
     type: string
-    example: 65e4decdd286b30065d54af9
+    description: Unique identifier for the story, generated automatically by MongoDB
+    example: '64f0c8b7a2b3c1d234567891'
   img:
     type: string
-    description: Story's photo
-    default: null
-    format: binary
+    description: URL to the story's image generated automatically after upload the image to the server
     example: 'https://res.cloudinary.com/dha4xvgfi/image/upload/v1759947947/aclxd7sbpsrb8hviowbe.jpg'
   title:
-    description: "Story's title"
     type: string
-    example: 'Мадагаскар: острів дивовижних створінь'
+    description: Story's title
+    example: 'Madagascar: A Miniature Planet of Wonders'
   article:
-    description: "Storyt's article"
     type: string
-    example: 'Мадагаскар — це планета в мініатюрі. Ми побачили баобаби, що підносяться до неба, і лемурів, які стрибали просто поруч. Подорожували як на джипах, так і на човнах, щоб дістатися віддалених сіл. Місцеві жителі ділилися історіями про свою культуру, що відрізняється від усіх африканських. Найбільше вразила «Алея баобабів» на заході сонця — картина, яку неможливо забути. Мадагаскар — це місце, де відчуваєш силу і різноманіття природи.'
+    description: "Story's article"
+    example: 'Madagascar is a planet in miniature. We saw baobabs soaring into the sky and lemurs jumping right next to us. We traveled both by jeep and by boat to reach remote villages. The locals shared stories about their culture, which is different from all African ones. The most impressive thing was the "Alley of the Baobabs" at sunset - a picture that cannot be forgotten. Madagascar is a place where you feel the power and diversity of nature.'
   category:
-    description: 'Story category id'
     type: string
+    description: Story category id
     example: '68efd834f1781f960b1e7a6c'
   ownerId:
-    description: 'Story owner id'
     type: string
+    description: Story owner id
     example: '68efd834f1781f960b1e7a6c'
-  contactType:
-    description: "Story's type"
-    type: string
-    enum: ['work', 'home', 'personal']
-  date:
-    type: string
-    example: '2024-08-28'
   favoriteCount:
-    type: number
-    example: 5
+    type: integer
+    example: 10
+  createdAt:
+    type: string
+    format: date-time
+    example: '2025-11-13T12:00:00Z'
+  updatedAt:
+    type: string
+    format: date-time
+    example: '2025-11-13T14:00:00Z'

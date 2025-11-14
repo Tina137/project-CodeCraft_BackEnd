@@ -1,36 +1,32 @@
 patch:
-  operationId: updateUserInfo
-  summary: Update user info
-  description: Updates current user info. Authentication is required.
+  summary: Update Current User Info
+  description: Update the information of the currently authenticated user. Requires authorization.
+  operationId: updateUser
   tags:
     - Users
   security:
-    - bearerAuth: []
+    - cookieAuth: []
   requestBody:
     required: true
     content:
       application/json:
         schema:
-          $ref: '../../../components/schemas/updateUser.yaml'
+          type: object
+          properties:
+            name:
+              type: string
+              example: 'Ivan Petrenko'
+            email:
+              type: string
+              example: 'ivan@example.com'
+            description:
+              type: string
+              example: 'New description about the user'
+          minProperties: 1
   responses:
     '200':
-      description: User info updated
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: integer
-                example: 200
-              message:
-                type: string
-                example: User was successfully updated!
-              data:
-                $ref: '../../../components/schemas/user.yaml'
+      $ref: '../../../components/responses/200.yaml'
     '400':
       $ref: '../../../components/responses/400.yaml'
     '401':
       $ref: '../../../components/responses/401.yaml'
-    '500':
-      $ref: '../../../components/responses/500.yaml'

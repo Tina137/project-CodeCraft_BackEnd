@@ -1,5 +1,4 @@
 import 'dotenv/config';
-
 import express from 'express';
 import cors from 'cors';
 import pino from 'pino-http';
@@ -17,20 +16,10 @@ const PORT = Number(getEnvVar('PORT', '3000'));
 const allowedOrigins = ['http://localhost:3000'];
 export default function setupServer() {
   app.use(express.json());
-  
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        return callback(new Error('Not allowed by CORS'));
-      }
-    },
+  app.use(cors({
+    origin: getEnvVar('APP_DOMAIN', 'http://localhost:3000'),
     credentials: true,
-  }),
-);
+  }));
   app.use(
     pino({
       transport: {

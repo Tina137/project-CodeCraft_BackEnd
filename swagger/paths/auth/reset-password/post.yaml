@@ -1,7 +1,7 @@
 post:
-  summary: User Login
-  description: Authenticate a user and return a JWT token.
-  operationId: loginUser
+  summary: Reset Password
+  description: Reset the user's password using the provided token and new password.
+  operationId: resetPassword
   tags:
     - Auth
   security: []
@@ -12,17 +12,15 @@ post:
         schema:
           type: object
           properties:
-            email:
-              type: string
-              description: The user's email address.
-              example: 'ivan@example.com'
             password:
               type: string
-              description: The user's password.
-              example: 'strongpassword123'
+              example: 'newStrongPassword123'
+            token:
+              type: string
+              example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
           required:
-            - email
             - password
+            - token
   responses:
     '200':
       $ref: '../../../components/responses/200.yaml'
@@ -30,3 +28,5 @@ post:
       $ref: '../../../components/responses/400.yaml'
     '401':
       $ref: '../../../components/responses/401.yaml'
+    '404':
+      $ref: '../../../components/responses/404.yaml'

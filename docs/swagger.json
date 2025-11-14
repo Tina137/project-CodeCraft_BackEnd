@@ -7,425 +7,231 @@
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "description": "<опис вашого додатку>"
+    "description": "This is the Api documentation for Traveler site, platform where travelers share their stories, experiences, and adventures. The API enables user management, story creation, media uploads, and community interactions."
   },
   "servers": [
     {
-      "url": "http://localhost:3000"
+      "url": "http://localhost:3000/api",
+      "description": "Local development server"
     }
   ],
   "tags": [
     {
-      "name": "Public routers",
-      "description": "Публічні маршрути доступні без авторизвції"
+      "name": "Auth",
+      "description": "Authorization routes for user registration, login, logout, and password management."
     },
     {
-      "name": "Contacts",
-      "description": "Operations about users."
+      "name": "Users",
+      "description": "Operations about users, including profile management and retrieval."
     },
     {
       "name": "Stories",
-      "description": "Operations related to travel stories."
+      "description": "Operations related to traveler stories, including creation, retrieval, updating, and deletion."
     }
   ],
   "paths": {
-    "/users": {
-      "get": {
+    "/auth/register": {
+      "post": {
+        "summary": "User Registration",
+        "description": "Register a new user with name, email, and password.",
+        "operationId": "registerUser",
         "tags": [
-          "Public routers"
+          "Auth"
         ],
-        "summary": "Get list of all users",
-        "operationId": "getUsersList",
-        "description": "Повертає публічний список усіх користувачів з бази. Маршрут не вимагає авторизації. Дані включають основну інформацію про користувача, без паролю. Є пагінація з параметрами `page` і `limit`.\n",
         "security": [],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "page",
-            "schema": {
-              "type": "integer",
-              "default": 1,
-              "minimum": 1
-            },
-            "description": "Номер сторінки (починається з 1)"
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "schema": {
-              "type": "integer",
-              "default": 8,
-              "minimum": 1
-            },
-            "description": "Кількість користувачів на сторінці"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Список користувачів успішно отримано",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "page",
-                    "limit",
-                    "totalUsers",
-                    "hasNextPage",
-                    "users"
-                  ],
-                  "properties": {
-                    "page": {
-                      "type": "integer",
-                      "example": 1
-                    },
-                    "limit": {
-                      "type": "integer",
-                      "example": 8
-                    },
-                    "totalUsers": {
-                      "type": "integer",
-                      "example": 57
-                    },
-                    "hasNextPage": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "users": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/user"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "message"
-                  ],
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "description": "Опис помилки",
-                      "example": "Internal server error"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/users/{userId}": {
-      "get": {
-        "tags": [
-          "Public routers"
-        ],
-        "summary": "Get user profile by ID",
-        "operationId": "getUserById",
-        "description": "Get user profile by ID with optional authentication. Without token canFavorite = false. With Bearer token canFavorite = true, and stories mark isFavorited.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "userId",
-            "required": true,
-            "description": "ID автора, чиї дані запитуються",
-            "schema": {
-              "type": "string",
-              "example": "6881563901add19ee16fcff5"
-            }
-          },
-          {
-            "in": "query",
-            "name": "page",
-            "required": false,
-            "description": "Номер сторінки (пагінація)",
-            "schema": {
-              "type": "integer",
-              "default": 1,
-              "example": 1
-            }
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "description": "Кільість елементів на сторінці",
-            "schema": {
-              "type": "integer",
-              "default": 6,
-              "example": 6
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully get user profile",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message",
-                    "data"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Successfully get user profile"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "user": {
-                          "$ref": "#/components/schemas/user"
-                        },
-                        "page": {
-                          "type": "integer",
-                          "example": 1
-                        },
-                        "limit": {
-                          "type": "integer",
-                          "example": 6
-                        },
-                        "totalStories": {
-                          "type": "integer",
-                          "example": 13
-                        },
-                        "hasNextPage": {
-                          "type": "boolean",
-                          "example": true
-                        },
-                        "stories": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/story"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "notAuthenticated": {
-                    "summary": "Example response without authentication",
-                    "value": {
-                      "status": 200,
-                      "message": "Successfully get user profile",
-                      "data": {
-                        "user": {
-                          "_id": "6881563901add19ee16fcff5",
-                          "name": "Дмитро Романенко",
-                          "avatarUrl": "https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcff5.webp",
-                          "description": "Привіт! Я Дмитро...",
-                          "articlesAmount": 13,
-                          "favoriteStories": [],
-                          "canFavorite": false
-                        },
-                        "page": 1,
-                        "limit": 6,
-                        "totalStories": 13,
-                        "hasNextPage": true,
-                        "stories": [
-                          {
-                            "_id": "68498236a100312bea07903b",
-                            "title": "Іспанія: Гауді і архітектура Барселони",
-                            "article": "Барселона — місто...",
-                            "category": "68fb50c80ae91338641121f2",
-                            "ownerId": "6881563901add19ee16fcff5",
-                            "img": "https://ftp.goit.study/img/travel-blog/68498236a100312bea07903b.webp",
-                            "date": "2024-11-06T00:00:00.000Z",
-                            "favoriteCount": 15,
-                            "canFavorite": false,
-                            "isFavorited": false
-                          }
-                        ]
-                      }
-                    }
-                  },
-                  "authenticated": {
-                    "summary": "Example response with authentication",
-                    "value": {
-                      "status": 200,
-                      "message": "Successfully get user profile",
-                      "data": {
-                        "user": {
-                          "_id": "6881563901add19ee16fcff5",
-                          "name": "Дмитро Романенко",
-                          "avatarUrl": "...",
-                          "description": "...",
-                          "articlesAmount": 13,
-                          "favoriteStories": [
-                            "68498236a100312bea07903b"
-                          ],
-                          "canFavorite": true
-                        },
-                        "page": 1,
-                        "limit": 6,
-                        "totalStories": 13,
-                        "hasNextPage": true,
-                        "stories": [
-                          {
-                            "_id": "68498236a100312bea07903b",
-                            "title": "Іспанія: Гауді і архітектура Барселони",
-                            "article": "...",
-                            "category": "68fb50c80ae91338641121f2",
-                            "ownerId": "6881563901add19ee16fcff5",
-                            "img": "...",
-                            "date": "2024-11-06T00:00:00.000Z",
-                            "favoriteCount": 15,
-                            "canFavorite": true,
-                            "isFavorited": true
-                          }
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 404
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "User not found"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
-    "/users/current": {
-      "get": {
-        "operationId": "getCurrentUser",
-        "summary": "Get current user info",
-        "description": "Return current authenticated user info",
-        "tags": [
-          "Users"
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User info is successfully fetched",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Current user fetched successfully"
-                    },
-                    "data": {
-                      "$ref": "#/components/schemas/user"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/401"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
-    "/users/updateUser": {
-      "patch": {
-        "operationId": "updateUserInfo",
-        "summary": "Update user info",
-        "description": "Updates current user info. Authentication is required.",
-        "tags": [
-          "Users"
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/updateUser"
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The user's name.",
+                    "example": "Ivan Petrenko"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "The user's email address.",
+                    "example": "ivan@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "The user's password.",
+                    "example": "strongpassword123"
+                  }
+                },
+                "required": [
+                  "name",
+                  "email",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/201"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "User Login",
+        "description": "Authenticate a user and return a JWT token.",
+        "operationId": "loginUser",
+        "tags": [
+          "Auth"
+        ],
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "The user's email address.",
+                    "example": "ivan@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "The user's password.",
+                    "example": "strongpassword123"
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ]
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "User info updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "User was successfully updated!"
-                    },
-                    "data": {
-                      "$ref": "#/components/schemas/user"
-                    }
+            "$ref": "#/components/responses/200"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "User Logout",
+        "description": "Logout the authenticated user by invalidating the session.",
+        "operationId": "logoutUser",
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/204"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          }
+        }
+      }
+    },
+    "/auth/send-reset-email": {
+      "post": {
+        "summary": "Send Password Reset Email",
+        "description": "Send a password reset email to the user with the provided email address.",
+        "operationId": "sendResetEmail",
+        "tags": [
+          "Auth"
+        ],
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "ivan@example.com"
                   }
-                }
+                },
+                "required": [
+                  "email"
+                ]
               }
             }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "summary": "Reset Password",
+        "description": "Reset the user's password using the provided token and new password.",
+        "operationId": "resetPassword",
+        "tags": [
+          "Auth"
+        ],
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "example": "newStrongPassword123"
+                  },
+                  "token": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  }
+                },
+                "required": [
+                  "password",
+                  "token"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
           },
           "400": {
             "$ref": "#/components/responses/400"
@@ -433,274 +239,154 @@
           "401": {
             "$ref": "#/components/responses/401"
           },
-          "500": {
-            "$ref": "#/components/responses/500"
+          "404": {
+            "$ref": "#/components/responses/404"
           }
         }
       }
     },
-    "/user/saved/{storyId}": {
-      "post": {
+    "/users": {
+      "get": {
+        "summary": "Get All Users List",
+        "description": "Returning a list of all users form the database. Does`t require authorization. The data includes basic user information without password. Pagination is implemented with `page` and `limit` parameters.",
+        "operationId": "getAllUsers",
         "tags": [
           "Users"
         ],
-        "summary": "Add story to saved list",
-        "description": "Adds a story ID to the user's `savedStories` list and increments the story's `favoriteCount`.\n",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "security": [],
         "parameters": [
           {
-            "name": "storyId",
-            "in": "path",
-            "required": true,
-            "description": "ID of the story to save",
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "required": false,
             "schema": {
-              "type": "string",
-              "example": "68498236a100312bea079008"
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of users per page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Story successfully added to saved list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Story added to saved",
-                      "savedStories": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "example": "68498236a100312bea079008"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/200"
           },
           "400": {
-            "description": "Story already saved or invalid request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "number",
-                      "example": 400
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Story already saved"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/401"
-          },
-          "404": {
-            "description": "Story or user not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "number",
-                      "example": 404
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Story not found"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
+            "$ref": "#/components/responses/400"
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/users/current": {
+      "get": {
+        "summary": "Get current user",
+        "description": "Return current authenticated user info. Requires authorization.",
+        "operationId": "getCurrentUser",
         "tags": [
           "Users"
         ],
-        "summary": "Remove story from saved list",
-        "description": "Removes a story ID from the user's `savedStories` list and decrements the story's `favoriteCount`.\n",
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
           }
         ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "summary": "Get User by ID",
+        "description": "Retrieve user information by their unique ID. Does not require authorization. The response includes basic user details without sensitive information.",
+        "operationId": "getUserById",
+        "tags": [
+          "Users"
+        ],
+        "security": [],
         "parameters": [
           {
-            "name": "storyId",
+            "name": "userId",
             "in": "path",
+            "description": "ID of the user to retrieve",
             "required": true,
-            "description": "ID of the story to remove",
             "schema": {
               "type": "string",
-              "example": "68498236a100312bea079008"
+              "example": "64f0c8a7a2b3c1d234567890"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Story successfully removed from saved list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Story removed from saved"
-                    },
-                    "savedStories": {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "example": []
-                      }
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/200"
           },
           "400": {
-            "description": "Story not in saved list or invalid request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "number",
-                      "example": 400
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Story not in saved list"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/401"
+            "$ref": "#/components/responses/400"
           },
           "404": {
-            "description": "Story or user not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "number",
-                      "example": 404
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Story not found"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
+            "$ref": "#/components/responses/404"
           }
         }
       }
     },
-    "/auth/login": {
-      "post": {
+    "/users/updateUser": {
+      "patch": {
+        "summary": "Update Current User Info",
+        "description": "Update the information of the currently authenticated user. Requires authorization.",
+        "operationId": "updateUser",
         "tags": [
-          "Auth"
+          "Users"
         ],
-        "summary": "User login",
-        "operationId": "loginUser",
-        "description": "Authenticate a user and return a JWT token.",
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "email",
-                  "password"
-                ],
                 "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Ivan Petrenko"
+                  },
                   "email": {
                     "type": "string",
-                    "description": "The user's email address.",
-                    "example": "1234@gmail.com"
+                    "example": "ivan@example.com"
                   },
-                  "password": {
+                  "description": {
                     "type": "string",
-                    "description": "The user's password.",
-                    "example": "strongpassword123"
+                    "example": "New description about the user"
                   }
-                }
+                },
+                "minProperties": 1
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Successfully logged in!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message",
-                    "data"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "description": "HTTP status code.",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "description": "Success message.",
-                      "example": "Successfully logged in!"
-                    },
-                    "data": {
-                      "type": "string",
-                      "description": "JWT token for authenticated requests.",
-                      "example": "accessToken DkaGVIWAQeo5/2blc96pd3lqAggNPzOyiTdlHViz"
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/200"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
           },
           "401": {
             "$ref": "#/components/responses/401"
@@ -708,17 +394,17 @@
         }
       }
     },
-    "/stories": {
-      "post": {
+    "/users/avatar": {
+      "patch": {
+        "summary": "Update User Avatar",
+        "description": "Update the avatar image of the currently authenticated user. Requires authorization.",
+        "operationId": "updateUserAvatar",
         "tags": [
-          "Stories"
+          "Users"
         ],
-        "summary": "Create a new story",
-        "operationId": "createStory",
-        "description": "Creates a new story\n",
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
           }
         ],
         "requestBody": {
@@ -727,21 +413,215 @@
             "multipart/form-data": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "title",
-                  "article",
-                  "category"
-                ],
+                "properties": {
+                  "avatar": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          }
+        }
+      }
+    },
+    "/users/saved/{storyId}": {
+      "post": {
+        "summary": "Save story to user's saved list",
+        "description": "Saves a story to the authenticated user's `savedStories` list by story ID. Requires authorization.",
+        "operationId": "saveStory",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "storyId",
+            "in": "path",
+            "description": "ID of the story to save",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "64f0d1a2b3c4567890123456"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete story from user's saved list",
+        "description": "Deletes a story from the authenticated user's `savedStories` list by story ID. Requires authorization.",
+        "operationId": "deleteSavedStory",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "storyId",
+            "in": "path",
+            "description": "ID of the story to delete",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "64f0d1a2b3c4567890123456"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/stories": {
+      "get": {
+        "summary": "Get list of stories with pagination, sorting, and filtering",
+        "description": "Retrieves a paginated list of stories with optional sorting and filtering by category or owner ID. Supports query parameters for page number, items per page, sort field, and sort order. Does't require authentication.",
+        "operationId": "getStories",
+        "tags": [
+          "Stories"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "Number of stories per page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "Field to sort by (title, article, category, ownerId, favoriteCount, createdAt)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "createdAt"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "Sort order (asc or desc)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "asc"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "Filter by category (ID)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ownerId",
+            "in": "query",
+            "description": "Filter by owner (user ID)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new story",
+        "description": "Creates a new story with title, article, category, and image upload. Requires authentication.",
+        "operationId": "createStory",
+        "tags": [
+          "Stories"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
                 "properties": {
                   "title": {
                     "type": "string",
                     "description": "Story title",
-                    "example": "Мандрівка Карпатами"
+                    "example": "Karpathian Adventure"
                   },
                   "article": {
                     "type": "string",
-                    "description": "Main text of the story",
-                    "example": "Неймовірна поїздка в гори з друзями..."
+                    "description": "Story content",
+                    "example": "Incredible trip to the mountains with friends..."
                   },
                   "category": {
                     "type": "string",
@@ -753,58 +633,73 @@
                     "format": "binary",
                     "description": "Image file for the story"
                   }
-                }
+                },
+                "required": [
+                  "title",
+                  "article",
+                  "category",
+                  "img"
+                ]
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Story successfully created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 201
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Successfully created a story!"
-                    },
-                    "data": {
-                      "$ref": "#/components/schemas/story"
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/201"
           },
           "400": {
             "$ref": "#/components/responses/400"
           },
           "401": {
             "$ref": "#/components/responses/401"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
           }
         }
       }
     },
     "/stories/{storyId}": {
-      "patch": {
+      "get": {
+        "summary": "Get story by ID",
+        "description": "Retrieves a story by its ID. Does not require authentication.",
+        "operationId": "getStoryById",
         "tags": [
           "Stories"
         ],
-        "summary": "Update a story",
-        "operationId": "updateStory",
-        "description": "Updates an existing story\n",
+        "security": [],
+        "parameters": [
+          {
+            "name": "storyId",
+            "in": "path",
+            "description": "Story ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "64f1a2b3c456789012345678"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update a story by ID",
+        "description": "Updates an existing story by its ID. Allows updating title, article, category, and image. Requires authentication and authorization (only the story owner can update).",
+        "operationId": "updateStoryById",
+        "tags": [
+          "Stories"
+        ],
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
           }
         ],
         "parameters": [
@@ -829,12 +724,12 @@
                   "title": {
                     "type": "string",
                     "description": "Updated story title",
-                    "example": "Мандрівка Карпатами"
+                    "example": "Exciting Journey to the Carpathians"
                   },
                   "article": {
                     "type": "string",
                     "description": "Updated story content",
-                    "example": "Неймовірна поїздка в гори з друзями..."
+                    "example": "Exciting trip to the mountains with friends..."
                   },
                   "category": {
                     "type": "string",
@@ -844,7 +739,7 @@
                   "img": {
                     "type": "string",
                     "format": "binary",
-                    "description": "Updated story image"
+                    "description": "Updated image file for the story"
                   }
                 }
               }
@@ -853,27 +748,7 @@
         },
         "responses": {
           "200": {
-            "description": "Story successfully updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Successfully updated a story!"
-                    },
-                    "data": {
-                      "$ref": "#/components/schemas/story"
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/200"
           },
           "400": {
             "$ref": "#/components/responses/400"
@@ -882,44 +757,52 @@
             "$ref": "#/components/responses/401"
           },
           "403": {
-            "description": "Forbidden — cannot edit someone else's story",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 403
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "You can edit only your own stories"
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/403"
           },
           "404": {
-            "description": "Story not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 404
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Story not found"
-                    }
-                  }
-                }
-              }
+            "$ref": "#/components/responses/404"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a story by ID",
+        "description": "Deletes a story by its ID. Requires authentication. Only the owner of the story can delete it. Also removes the story ID from all users' saved stories and decrements the user's article count.",
+        "operationId": "deleteStory",
+        "tags": [
+          "Stories"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "storyId",
+            "in": "path",
+            "description": "Story ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "64f1a2b3c456789012345678"
             }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
           },
           "500": {
             "$ref": "#/components/responses/500"
@@ -929,30 +812,24 @@
     }
   },
   "components": {
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
-      }
-    },
     "schemas": {
       "user": {
         "type": "object",
         "required": [
           "_id",
           "name",
-          "description"
+          "email"
         ],
         "properties": {
           "_id": {
             "type": "string",
-            "description": "Унікальний ідентифікатор користувача",
-            "example": "6881563901add19ee16fcff5"
+            "description": "Unique identifier for the user, generated automatically by MongoDB",
+            "example": "64f0c8a7a2b3c1d234567890"
           },
           "name": {
             "type": "string",
-            "description": "Ім’я користувача",
-            "example": "Дмитро Романенко"
+            "description": "User's name",
+            "example": "Dmytro Romanenko or Дмитро Романенко"
           },
           "email": {
             "type": "string",
@@ -960,19 +837,18 @@
           },
           "avatarUrl": {
             "type": "string",
-            "format": "uri",
-            "description": "URL до аватара користувача",
-            "example": "https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcff5.webp"
-          },
-          "articlesAmount": {
-            "type": "integer",
-            "description": "Кількість опублікованих історій користувача",
-            "example": 13
+            "description": "URL to the user's avatar image generated automatically after upload the image to the server",
+            "example": "https://res.cloudinary.com/dha4xvgfi/image/upload/v1759947947/aclxd7sbpsrb8hvsdwbe.jpg"
           },
           "description": {
             "type": "string",
-            "description": "Короткий опис користувача",
-            "example": "Привіт! Я Дмитро. Люблю знаходити приховані перлини у кожній поїздці."
+            "description": "Short description of the user",
+            "example": "Hi! I'm Dmytro. I love finding hidden gems in every trip."
+          },
+          "articlesAmount": {
+            "type": "integer",
+            "description": "Number of stories published by the user",
+            "example": 13
           },
           "savedStories": {
             "type": "array",
@@ -985,16 +861,13 @@
           },
           "createdAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2025-11-13T12:00:00Z"
           },
           "updatedAt": {
             "type": "string",
-            "format": "date-time"
-          },
-          "token": {
-            "type": "string",
-            "description": "Поточний токен авторизації або null",
-            "example": null
+            "format": "date-time",
+            "example": "2025-11-13T14:00:00Z"
           }
         }
       },
@@ -1006,100 +879,126 @@
           "title",
           "article",
           "category",
-          "ownerId",
-          "date",
-          "favoriteCount"
+          "ownerId"
         ],
         "properties": {
           "_id": {
-            "description": "Story's id",
             "type": "string",
-            "example": "65e4decdd286b30065d54af9"
+            "description": "Unique identifier for the story, generated automatically by MongoDB",
+            "example": "64f0c8b7a2b3c1d234567891"
           },
           "img": {
             "type": "string",
-            "description": "Story's photo",
-            "default": null,
-            "format": "binary",
+            "description": "URL to the story's image generated automatically after upload the image to the server",
             "example": "https://res.cloudinary.com/dha4xvgfi/image/upload/v1759947947/aclxd7sbpsrb8hviowbe.jpg"
           },
           "title": {
-            "description": "Story's title",
             "type": "string",
-            "example": "Мадагаскар: острів дивовижних створінь"
+            "description": "Story's title",
+            "example": "Madagascar: A Miniature Planet of Wonders"
           },
           "article": {
-            "description": "Storyt's article",
             "type": "string",
-            "example": "Мадагаскар — це планета в мініатюрі. Ми побачили баобаби, що підносяться до неба, і лемурів, які стрибали просто поруч. Подорожували як на джипах, так і на човнах, щоб дістатися віддалених сіл. Місцеві жителі ділилися історіями про свою культуру, що відрізняється від усіх африканських. Найбільше вразила «Алея баобабів» на заході сонця — картина, яку неможливо забути. Мадагаскар — це місце, де відчуваєш силу і різноманіття природи."
+            "description": "Story's article",
+            "example": "Madagascar is a planet in miniature. We saw baobabs soaring into the sky and lemurs jumping right next to us. We traveled both by jeep and by boat to reach remote villages. The locals shared stories about their culture, which is different from all African ones. The most impressive thing was the \"Alley of the Baobabs\" at sunset - a picture that cannot be forgotten. Madagascar is a place where you feel the power and diversity of nature."
           },
           "category": {
-            "description": "Story category id",
             "type": "string",
+            "description": "Story category id",
             "example": "68efd834f1781f960b1e7a6c"
           },
           "ownerId": {
-            "description": "Story owner id",
             "type": "string",
+            "description": "Story owner id",
             "example": "68efd834f1781f960b1e7a6c"
           },
-          "contactType": {
-            "description": "Story's type",
-            "type": "string",
-            "enum": [
-              "work",
-              "home",
-              "personal"
-            ]
-          },
-          "date": {
-            "type": "string",
-            "example": "2024-08-28"
-          },
           "favoriteCount": {
-            "type": "number",
-            "example": 5
+            "type": "integer",
+            "example": 10
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-11-13T12:00:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-11-13T14:00:00Z"
           }
         }
-      },
-      "updateUser": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "Оновлене ім’я"
-          },
-          "email": {
-            "type": "string",
-            "example": "newemail@example.com"
-          },
-          "avatarUrl": {
-            "type": "string",
-            "example": "https://example.com/avatar.jpg"
-          },
-          "description": {
-            "type": "string",
-            "example": "Короткий опис користувача"
-          },
-          "articlesAmount": {
-            "type": "integer",
-            "example": 5
-          }
-        },
-        "required": []
       }
     },
     "responses": {
+      "200": {
+        "description": "OK - successful operation",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully fetched user"
+                },
+                "data": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "status",
+                "message",
+                "data"
+              ]
+            }
+          }
+        }
+      },
+      "201": {
+        "description": "Created - resource successfully created",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 201
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User successfully registered"
+                },
+                "data": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "status",
+                "message",
+                "data"
+              ]
+            }
+          }
+        }
+      },
+      "204": {
+        "description": "No Content - successful operation with no content to return",
+        "content": {}
+      },
       "400": {
-        "description": "Bad Request",
+        "description": "Bad Request - uncorrect data or validation error",
         "content": {
           "application/json": {
             "schema": {
               "type": "object",
               "required": [
                 "status",
-                "message",
-                "data"
+                "message"
               ],
               "properties": {
                 "status": {
@@ -1108,13 +1007,17 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Bad Request"
+                  "example": "The Email field must be a valid email address."
                 },
-                "data": {
+                "errors": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "example": [
+                    "The Name field must contain at least 3 characters.",
+                    "The Password field is required."
+                  ]
                 }
               }
             }
@@ -1122,15 +1025,14 @@
         }
       },
       "401": {
-        "description": "Unauthorized error",
+        "description": "Unauthorized - invalid or missing authentication token",
         "content": {
           "application/json": {
             "schema": {
               "type": "object",
               "required": [
                 "status",
-                "message",
-                "data"
+                "message"
               ],
               "properties": {
                 "status": {
@@ -1139,21 +1041,81 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "UnauthorizedError"
-                },
-                "data": {
-                  "type": "object",
-                  "required": [
-                    "message"
-                  ],
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Access token expired"
-                    }
-                  }
+                  "example": "Access token expired"
                 }
               }
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden - the user does not have permission to access the resource",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 403
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You can edit only your own stories"
+                }
+              },
+              "required": [
+                "status",
+                "message"
+              ]
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found - the requested resource does not exist",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User not found"
+                }
+              },
+              "required": [
+                "status",
+                "message"
+              ]
+            }
+          }
+        }
+      },
+      "409": {
+        "description": "Conflict - the request could not be completed due to a conflict with the current state of the resource",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 409
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Email already in use"
+                }
+              },
+              "required": [
+                "status",
+                "message"
+              ]
             }
           }
         }
@@ -1181,6 +1143,14 @@
             }
           }
         }
+      }
+    },
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "accessToken",
+        "description": "Authentication is done automatically via accessToken which is stored in cookies after successful registration or login. There is no need to manually enter the accessToken value in the field below."
       }
     }
   }

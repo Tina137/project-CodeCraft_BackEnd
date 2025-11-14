@@ -1,0 +1,25 @@
+patch:
+  summary: Update User Avatar
+  description: Update the avatar image of the currently authenticated user. Requires authorization.
+  operationId: updateUserAvatar
+  tags:
+    - Users
+  security:
+    - cookieAuth: []
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          properties:
+            avatar:
+              type: string
+              format: binary
+  responses:
+    '200':
+      $ref: '../../../components/responses/200.yaml'
+    '400':
+      $ref: '../../../components/responses/400.yaml'
+    '401':
+      $ref: '../../../components/responses/401.yaml'

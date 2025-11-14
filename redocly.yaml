@@ -6,13 +6,16 @@ extends:
   - recommended
 rules:
   no-unused-components: error
+  no-server-example.com: off
 theme:
-  htmlTemplate: ./docs/index.html
-  colors:
-    primary:
-      main: '#32329f'
-  generateCodeSamples:
-    languages:
-      - lang: curl
-      - lang: Node.js
-      - lang: JavaScript
+  openapi:
+    htmlTemplate: ./docs/index.html
+    theme:
+      colors:
+        primary:
+          main: '#32329f'
+    generateCodeSamples:
+      languages:
+        - lang: curl
+        - lang: Node.js
+        - lang: JavaScript

@@ -67,3 +67,23 @@ export const updateStory = async (storyId, userId, updateData) => {
 
   return story;
 };
+
+export const deleteStory = async (storyId, userId) => {
+  const story = await StoryCollection.findById(storyId);
+  if (!story) throw createHttpError(404, 'Story not found');
+
+  if (story.ownerId.toString() !== userId.toString()) {
+    throw createHttpError(403, 'You can delete only your own stories');
+  }
+
+  await StoryCollection.findByIdAndDelete(storyId);
+
+  await UsersCollection.updateMany(
+    { savedStories: storyId },
+    { $pull: { savedStories: storyId } }
+  );
+
+  await UsersCollection.findByIdAndUpdate(userId, { $inc: { articlesAmount: -1 } });
+
+  return story;
+};

@@ -1,28 +1,13 @@
 get:
+  summary: Get current user
+  description: Return current authenticated user info. Requires authorization.
   operationId: getCurrentUser
-  summary: Get current user info 
-  description: Return current authenticated user info 
   tags:
     - Users
   security:
-    - bearerAuth: []
+    - cookieAuth: []
   responses:
     '200':
-      description: User info is successfully fetched 
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: integer
-                example: 200
-              message:
-                type: string
-                example: Current user fetched successfully
-              data:
-                $ref: '../../../components/schemas/user.yaml'
+      $ref: '../../../components/responses/200.yaml'
     '401':
       $ref: '../../../components/responses/401.yaml'
-    '500':
-      $ref: '../../../components/responses/500.yaml'
