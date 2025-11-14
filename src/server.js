@@ -14,10 +14,23 @@ import { swaggerDocs } from './middlewares/swaggerDocs.js';
 const app = express();
 
 const PORT = Number(getEnvVar('PORT', '3000'));
-
+const allowedOrigins = ['http://localhost:3000'];
 export default function setupServer() {
   app.use(express.json());
-  app.use(cors());
+  
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+  }),
+);
   app.use(
     pino({
       transport: {
