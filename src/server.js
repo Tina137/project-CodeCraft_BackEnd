@@ -13,7 +13,7 @@ import { swaggerDocs } from './middlewares/swaggerDocs.js';
 const app = express();
 
 const PORT = Number(getEnvVar('PORT', '3000'));
-
+const allowedOrigins = ['http://localhost:3000'];
 export default function setupServer() {
   app.use(express.json());
   app.use(cors({
