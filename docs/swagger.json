@@ -11,6 +11,10 @@
   },
   "servers": [
     {
+      "url": "https://project-codecraft-backend.onrender.com/api",
+      "description": "Production server (Render)"
+    },
+    {
       "url": "http://localhost:3000/api",
       "description": "Local development server"
     }
