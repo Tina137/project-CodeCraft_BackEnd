@@ -5,8 +5,8 @@ import { SessionsCollection } from '../db/models/session.js';
 
 const getCookieOptions = (maxAge) => ({
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict',
+  secure: true,
+  sameSite: 'none',
   path: '/',
   maxAge,
 });
