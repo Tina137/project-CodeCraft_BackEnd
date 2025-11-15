@@ -1,61 +1,24 @@
+summary: Delete story from user's saved list
+description: Deletes a story from the authenticated user's `savedStories` list by story ID. Requires authorization.
+operationId: deleteSavedStory
 tags:
   - Users
-summary: Remove story from saved list
-description: >
-  Removes a story ID from the user's `savedStories` list and decrements the story's `favoriteCount`.
 security:
-  - bearerAuth: []
+  - cookieAuth: []
 parameters:
   - name: storyId
     in: path
+    description: ID of the story to delete
     required: true
-    description: ID of the story to remove
     schema:
       type: string
-      example: 68498236a100312bea079008
+      example: '64f0d1a2b3c4567890123456'
 responses:
   '200':
-    description: Story successfully removed from saved list
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
-              example: Story removed from saved
-            savedStories:
-              type: array
-              items:
-                type: string
-                example: []
+    $ref: ../../../../components/responses/200.yaml
   '400':
-    description: Story not in saved list or invalid request
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            status:
-              type: number
-              example: 400
-            message:
-              type: string
-              example: Story not in saved list
+    $ref: ../../../../components/responses/400.yaml
   '401':
-    $ref: '../../../../components/responses/401.yaml'
+    $ref: ../../../../components/responses/401.yaml
   '404':
-    description: Story or user not found
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            status:
-              type: number
-              example: 404
-            message:
-              type: string
-              example: Story not found
-  '500':
-    $ref: '../../../../components/responses/500.yaml'
+    $ref: ../../../../components/responses/404.yaml

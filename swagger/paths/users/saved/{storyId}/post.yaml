@@ -1,61 +1,24 @@
+summary: Save story to user's saved list
+description: Saves a story to the authenticated user's `savedStories` list by story ID. Requires authorization.
+operationId: saveStory
 tags:
   - Users
-summary: Add story to saved list
-description: >
-  Adds a story ID to the user's `savedStories` list and increments the story's `favoriteCount`.
 security:
-  - bearerAuth: []
+  - cookieAuth: []
 parameters:
   - name: storyId
     in: path
-    required: true
     description: ID of the story to save
+    required: true
     schema:
       type: string
-      example: 68498236a100312bea079008
+      example: '64f0d1a2b3c4567890123456'
 responses:
   '200':
-    description: Story successfully added to saved list
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
-              example: Story added to saved
-              savedStories:
-                type: array
-                items:
-                  type: string
-                  example: 68498236a100312bea079008
+    $ref: ../../../../components/responses/200.yaml
   '400':
-    description: Story already saved or invalid request
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            status:
-              type: number
-              example: 400
-            message:
-              type: string
-              example: Story already saved
-  401:
-    $ref: '../../../../components/responses/401.yaml'
+    $ref: ../../../../components/responses/400.yaml
+  '401':
+    $ref: ../../../../components/responses/401.yaml
   '404':
-    description: Story or user not found
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            status:
-              type: number
-              example: 404
-            message:
-              type: string
-              example: Story not found
-  '500':
-    $ref: '../../../../components/responses/500.yaml'
+    $ref: ../../../../components/responses/404.yaml

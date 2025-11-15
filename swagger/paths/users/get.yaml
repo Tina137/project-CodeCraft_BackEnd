@@ -1,68 +1,27 @@
-tags:
-  - Public routers
-summary: Get list of all users
-operationId: getUsersList
-description: >
-  Повертає публічний список усіх користувачів з бази.
-  Маршрут не вимагає авторизації.
-  Дані включають основну інформацію про користувача, без паролю.
-  Є пагінація з параметрами `page` і `limit`.
-security: []
-parameters:
-  - in: query
-    name: page
-    schema:
-      type: integer
-      default: 1
-      minimum: 1
-    description: Номер сторінки (починається з 1)
-  - in: query
-    name: limit
-    schema:
-      type: integer
-      default: 8
-      minimum: 1
-    description: Кількість користувачів на сторінці
-responses:
-  '200':
-    description: Список користувачів успішно отримано
-    content:
-      application/json:
-        schema:
-          type: object
-          required:
-            - page
-            - limit
-            - totalUsers
-            - hasNextPage
-            - users
-          properties:
-            page:
-              type: integer
-              example: 1
-            limit:
-              type: integer
-              example: 8
-            totalUsers:
-              type: integer
-              example: 57
-            hasNextPage:
-              type: boolean
-              example: true
-            users:
-              type: array
-              items:
-                $ref: ../../components/schemas/user.yaml
-  '500':
-    description: Internal server error
-    content:
-      application/json:
-        schema:
-          type: object
-          required:
-            - message
-          properties:
-            message:
-              type: string
-              description: Опис помилки
-              example: Internal server error
+get:
+  summary: Get All Users List
+  description: Returning a list of all users form the database. Does`t require authorization. The data includes basic user information without password. Pagination is implemented with `page` and `limit` parameters.
+  operationId: getAllUsers
+  tags:
+    - Users
+  security: []
+  parameters:
+    - name: page
+      in: query
+      description: Page number
+      required: false
+      schema:
+        type: integer
+        default: 1
+    - name: limit
+      in: query
+      description: Number of users per page
+      required: false
+      schema:
+        type: integer
+        default: 10
+  responses:
+    '200':
+      $ref: '../../components/responses/200.yaml'
+    '400':
+      $ref: '../../components/responses/400.yaml'

@@ -1,11 +1,9 @@
 import createHttpError from 'http-errors';
-import { getStories } from '../services/stories.js';
 import { HTTP_STATUS } from '../constants/index.js';
-
 import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 import { getEnvVar } from '../utils/getEnvVar.js';
-import { createStory, getStoryById, updateStory } from '../services/stories.js';
+import { getStories, createStory, getStoryById, updateStory, deleteStory } from '../services/stories.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 
@@ -13,7 +11,7 @@ export const getStoriesController = async (req, res, next) => {
   try {
     const { page, perPage } = parsePaginationParams(req.query);
     const { sortBy, sortOrder } = parseSortParams(req.query);
-    const { category } = req.query;
+    const { category, ownerId } = req.query;
 
     const stories = await getStories({
       page,
@@ -21,6 +19,7 @@ export const getStoriesController = async (req, res, next) => {
       sortBy,
       sortOrder,
       category,
+      ownerId,
     });
 
     res.json({
@@ -53,8 +52,8 @@ export const createStoryController = async (req, res, next) => {
     const { title, article, category } = req.body;
     const file = req.file;
 
-    if (!title || !article || !category) {
-      throw createHttpError(400, 'Please provide all required fields');
+    if (!file) {
+      throw createHttpError(400, 'Image is required');
     }
 
     let imgUrl;
@@ -87,9 +86,11 @@ export const createStoryController = async (req, res, next) => {
 
 export const updateStoryController = async (req, res, next) => {
   try {
-    const { storyId } = req.params;
+    const storyId = req.params.storyId;
     const file = req.file;
     const userId = req.user._id;
+
+    const body = req.body || {};
 
     let imgUrl;
 
@@ -101,9 +102,14 @@ export const updateStoryController = async (req, res, next) => {
       }
     }
 
-    const updateData = {
-      ...req.body,
-    };
+    const allowedFields = ['title', 'article', 'category'];
+    const updateData = {};
+
+    for (const field of allowedFields) {
+      if (body[field] !== undefined) {
+        updateData[field] = body[field];
+      }
+    }
 
     if (imgUrl) updateData.img = imgUrl;
 
@@ -113,6 +119,23 @@ export const updateStoryController = async (req, res, next) => {
       status: HTTP_STATUS.OK,
       message: 'Successfully updated a story!',
       data: updatedStory,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteStoryController = async (req, res, next) => {
+  try {
+    const { storyId } = req.params;
+    const userId = req.user._id;
+
+    const deletedStory = await deleteStory(storyId, userId);
+
+    res.json({
+      status: HTTP_STATUS.OK,
+      message: 'Story successfully deleted!',
+      data: deletedStory,
     });
   } catch (error) {
     next(error);

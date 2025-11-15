@@ -2,32 +2,31 @@ type: object
 required:
   - _id
   - name
-  - description
+  - email
 properties:
   _id:
     type: string
-    description: Унікальний ідентифікатор користувача
-    example: 6881563901add19ee16fcff5
+    description: Unique identifier for the user, generated automatically by MongoDB
+    example: '64f0c8a7a2b3c1d234567890'
   name:
     type: string
-    description: Ім’я користувача
-    example: Дмитро Романенко
+    description: User's name
+    example: Dmytro Romanenko or Дмитро Романенко
   email:
     type: string
     example: ivan@example.com
   avatarUrl:
     type: string
-    format: uri
-    description: URL до аватара користувача
-    example: https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcff5.webp
-  articlesAmount:
-    type: integer
-    description: Кількість опублікованих історій користувача
-    example: 13
+    description: URL to the user's avatar image generated automatically after upload the image to the server
+    example: 'https://res.cloudinary.com/dha4xvgfi/image/upload/v1759947947/aclxd7sbpsrb8hvsdwbe.jpg'
   description:
     type: string
-    description: Короткий опис користувача
-    example: Привіт! Я Дмитро. Люблю знаходити приховані перлини у кожній поїздці.
+    description: Short description of the user
+    example: Hi! I'm Dmytro. I love finding hidden gems in every trip.
+  articlesAmount:
+    type: integer
+    description: Number of stories published by the user
+    example: 13
   savedStories:
     type: array
     items:
@@ -36,10 +35,8 @@ properties:
   createdAt:
     type: string
     format: date-time
+    example: '2025-11-13T12:00:00Z'
   updatedAt:
     type: string
     format: date-time
-  token:
-    type: string
-    description: Поточний токен авторизації або null
-    example: null
+    example: '2025-11-13T14:00:00Z'
