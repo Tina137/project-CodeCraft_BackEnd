@@ -44,10 +44,10 @@ export const getUserByIdController = async (req, res) => {
 
 export const getUsersListController = async (req, res) => {
   const { page = 1, limit = 8 } = req.query;
-  const skip = (page - 1) * limit;
+  const skip = (page - 1) * Number(limit);
 
   const users = await UsersCollection.find()
-    .select('-password')
+    .select('_id name avatarUrl description')
     .skip(skip)
     .limit(Number(limit));
 
@@ -56,7 +56,6 @@ export const getUsersListController = async (req, res) => {
   res.json({
     page: Number(page),
     limit: Number(limit),
-    totalUsers,
     hasNextPage: skip + users.length < totalUsers,
     users,
   });
