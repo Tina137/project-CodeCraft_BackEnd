@@ -5,7 +5,6 @@ import {
   loginSchema,
   requestResetEmailSchema,
   resetPasswordSchema,
-  refreshUserSessionController,
 } from '../validation/auth.js';
 import { authenticate } from '../middlewares/authenticate.js';
 import { validateBody } from '../middlewares/validateBody.js';
