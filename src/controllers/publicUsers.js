@@ -47,16 +47,19 @@ export const getUsersListController = async (req, res) => {
   const skip = (page - 1) * Number(limit);
 
   const users = await UsersCollection.find()
-    .select('_id name avatarUrl description')
+    .select('_id name avatarUrl description articlesAmount updatedAt')
     .skip(skip)
     .limit(Number(limit));
 
   const totalUsers = await UsersCollection.countDocuments();
 
   res.json({
+    status: 200,
+    message: 'Users fetched successfully',
     page: Number(page),
     limit: Number(limit),
+    total: totalUsers,
     hasNextPage: skip + users.length < totalUsers,
-    users,
+    data: users,
   });
 };
