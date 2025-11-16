@@ -2,6 +2,7 @@ import { FIFTEEN_MINUTES, ONE_DAY } from '../constants/index.js';
 import * as authService from '../services/auth.js';
 import { HTTP_STATUS } from '../constants/index.js';
 import { SessionsCollection } from '../db/models/session.js';
+import createHttpError from 'http-errors';
 
 const getCookieOptions = (maxAge) => ({
   httpOnly: true,
@@ -68,9 +69,7 @@ export const refreshUserSessionController = async (req, res, next) => {
     const refreshToken = req.cookies?.refreshToken;
 
     if (!sessionId || !refreshToken) {
-      const err = new Error('Missing sessionId or refreshToken in cookies');
-      err.status = 401;
-      throw err;
+      throw createHttpError(401, 'Missing sessionId or refreshToken in cookies');
     }
 
     const session = await authService.refreshUsersSession({
