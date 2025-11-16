@@ -4,19 +4,25 @@ import createHttpError from 'http-errors';
 import { getEnvVar } from '../utils/getEnvVar.js';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
+import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 
 // Отримати всіх користувачів з пагінацією
 export const getAllUsers = async (page = 1, limit = 10) => {
-  const skip = (page - 1) * limit;
+  const skip = (page - 1) * perPage;
 
-  const [users, total] = await Promise.all([
+  const [users, totalItems] = await Promise.all([
     UsersCollection.find({}, '-password -savedStories -__v')
       .skip(skip)
-      .limit(limit),
+      .limit(perPage),
     UsersCollection.countDocuments(),
   ]);
 
-  return { users, total };
+  const pagination = calculatePaginationData(totalItems, perPage, page);
+
+  return {
+    data: users,
+    ...pagination
+  };
 };
 
 // Отримати одного користувача за id

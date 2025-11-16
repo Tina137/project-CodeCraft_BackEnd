@@ -11,16 +11,13 @@ import {
 
 export const getAllUsersController = async (req, res, next) => {
   try {
-    const { page = 1, limit = 10 } = req.query;
-    const { users, total } = await getAllUsers(Number(page), Number(limit));
+    const { page = 1, perPage = 10 } = req.query;
+    const result = await getAllUsers(Number(page), Number(perPage));
 
     res.status(HTTP_STATUS.OK).json({
       status: HTTP_STATUS.OK,
       message: 'Users fetched successfully',
-      page: Number(page),
-      limit: Number(limit),
-      total,
-      data: users,
+      ...result
     });
   } catch (error) {
     next(error);
