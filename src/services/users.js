@@ -7,7 +7,7 @@ import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 
 // Отримати всіх користувачів з пагінацією
-export const getAllUsers = async (page = 1, limit = 10) => {
+export const getAllUsers = async (page = 1, perPage = 10) => {
   const skip = (page - 1) * perPage;
 
   const [users, totalItems] = await Promise.all([
