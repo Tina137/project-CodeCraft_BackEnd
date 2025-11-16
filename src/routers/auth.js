@@ -5,6 +5,7 @@ import {
   loginSchema,
   requestResetEmailSchema,
   resetPasswordSchema,
+  refreshUserSessionController,
 } from '../validation/auth.js';
 import { authenticate } from '../middlewares/authenticate.js';
 import { validateBody } from '../middlewares/validateBody.js';
@@ -14,6 +15,7 @@ const router = Router();
 router.post('/register', validateBody(registerSchema), ctrl.registerUserController);
 router.post('/login', validateBody(loginSchema), ctrl.loginUserController);
 router.post('/logout', authenticate, ctrl.logoutUserController);
+router.post('/refresh', ctrl.refreshUserSessionController);
 router.post('/send-reset-email', validateBody(requestResetEmailSchema), ctrl.requestResetEmailController);
 router.post('/reset-password', validateBody(resetPasswordSchema), ctrl.resetPasswordController);
 

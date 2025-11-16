@@ -1,0 +1,18 @@
+description: Created - resource successfully created
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 201
+        message:
+          type: string
+          example: 'User successfully registered'
+        data:
+          type: object
+      required:
+        - status
+        - message
+        - data

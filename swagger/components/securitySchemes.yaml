@@ -1,0 +1,5 @@
+cookieAuth:
+  type: apiKey
+  in: cookie
+  name: accessToken
+  description: Authentication is done automatically via accessToken which is stored in cookies after successful registration or login. There is no need to manually enter the accessToken value in the field below.

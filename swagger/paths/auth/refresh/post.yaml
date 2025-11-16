@@ -1,0 +1,18 @@
+post:
+  summary: Refresh User Session
+  description: >
+    Refreshes the user session by reissuing the `accessToken` and `refreshToken`.
+    Uses the `sessionId` and `refreshToken` cookies.
+    Sets new cookies in the browser upon successful refresh.
+  operationId: refreshUserSession
+  tags:
+    - Auth
+  security:
+    - cookieAuth: []
+  responses:
+    '200':
+      $ref: '../../../components/responses/200.yaml'
+    '401':
+      $ref: '../../../components/responses/401.yaml'
+    '500':
+      $ref: '../../../components/responses/500.yaml'

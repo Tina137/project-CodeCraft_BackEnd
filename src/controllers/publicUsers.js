@@ -1,5 +1,5 @@
 import { UsersCollection } from '../db/models/user.js';
-import { Story } from '../db/models/stories.js';
+import { StoryCollection } from '../db/models/stories.js';
 import createHttpError from 'http-errors';
 
 export const getUserByIdController = async (req, res) => {
@@ -10,9 +10,9 @@ export const getUserByIdController = async (req, res) => {
   const user = await UsersCollection.findById(userId).select('-password');
   if (!user) throw createHttpError(404, 'User not found');
 
-  const totalStories = await Story.countDocuments({ ownerId: userId });
+  const totalStories = await StoryCollection.countDocuments({ ownerId: userId });
 
-  const userStories = await Story.find({ ownerId: userId })
+  const userStories = await StoryCollection.find({ ownerId: userId })
     .skip(skip)
     .limit(Number(limit));
 
