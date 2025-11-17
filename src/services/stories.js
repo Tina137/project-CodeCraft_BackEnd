@@ -19,7 +19,14 @@ export const getStories = async ({
   if (category) filter.category = category;
   if (ownerId) filter.ownerId = ownerId;
 
-  const allowedSortFields = ['title', 'article', 'category', 'ownerId', 'favoriteCount', 'createdAt'];
+  const allowedSortFields = [
+    'title',
+    'article',
+    'category',
+    'ownerId',
+    'favoriteCount',
+    'createdAt',
+  ];
   const sortField = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
 
   const sortDirection = sortOrder.toLowerCase() === 'desc' ? -1 : 1;
@@ -30,6 +37,10 @@ export const getStories = async ({
     .skip(skip)
     .limit(limit)
     .sort({ [sortField]: sortDirection })
+    .populate({
+      path: 'ownerId',
+      select: 'name avatarUrl',
+    })
     .exec();
 
   const paginationData = calculatePaginationData(storiesCount, perPage, page);
@@ -49,7 +60,9 @@ export const getStoryById = async (storyId) => {
 
 export const createStory = async (payload) => {
   const story = await StoryCollection.create(payload);
-  await UsersCollection.findByIdAndUpdate(payload.ownerId, { $inc: { articlesAmount: 1 } });
+  await UsersCollection.findByIdAndUpdate(payload.ownerId, {
+    $inc: { articlesAmount: 1 },
+  });
   return story;
 };
 
@@ -80,10 +93,12 @@ export const deleteStory = async (storyId, userId) => {
 
   await UsersCollection.updateMany(
     { savedStories: storyId },
-    { $pull: { savedStories: storyId } }
+    { $pull: { savedStories: storyId } },
   );
 
-  await UsersCollection.findByIdAndUpdate(userId, { $inc: { articlesAmount: -1 } });
+  await UsersCollection.findByIdAndUpdate(userId, {
+    $inc: { articlesAmount: -1 },
+  });
 
   return story;
 };
