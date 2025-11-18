@@ -19,7 +19,7 @@ export const getStoriesController = async (req, res, next) => {
     const { sortBy, sortOrder } = parseSortParams(req.query);
     const { category, ownerId } = req.query;
 
-    const { data, total, hasNextPage, limit } = await getStories({
+    const stories = await getStories({
       page,
       perPage,
       sortBy,
@@ -31,11 +31,7 @@ export const getStoriesController = async (req, res, next) => {
     res.json({
       status: HTTP_STATUS.OK,
       message: 'Stories fetched successfully',
-      page,
-      limit, // = perPage
-      total, // загальна кількість документів
-      hasNextPage, // true / false
-      data, // масив сторіс
+      data: stories,
     });
   } catch (error) {
     next(error);
