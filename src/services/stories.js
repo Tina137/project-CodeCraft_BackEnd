@@ -37,14 +37,16 @@ export const getStories = async ({
 
   const stories = await StoryCollection.find(filter)
     .skip(skip)
-    .limit(limit)
-    .sort({ [sortField]: sortDirection })
+    .limit(perPage)
+    .sort({ [sortField]: sortDirection, _id: 1 })
     .populate({
       path: 'ownerId',
-      select: 'name avatarUrl articlesAmount description',
+      select: 'name avatarUrl description',
     })
-    .populate({ path: 'category', select: 'name' })
-    .exec();
+    .populate({
+      path: 'category',
+      select: 'name',
+    });
 
   const paginationData = calculatePaginationData(total, perPage, page);
 
