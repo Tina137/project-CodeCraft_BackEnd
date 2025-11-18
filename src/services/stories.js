@@ -32,7 +32,6 @@ export const getStories = async ({
 
   const sortDirection = sortOrder.toLowerCase() === 'desc' ? -1 : 1;
 
-  // 👇 Ось тут твій правильний total
   const total = await StoryCollection.countDocuments(filter);
 
   const stories = await StoryCollection.find(filter)
@@ -48,13 +47,20 @@ export const getStories = async ({
       select: 'name',
     });
 
-  const paginationData = calculatePaginationData(total, perPage, page);
+  const pagination = calculatePaginationData(total, perPage, page);
 
   return {
-    data: stories,
-    total, // 👈 Додаємо total
-    limit,
-    hasNextPage: paginationData.hasNextPage,
+    status: 200,
+    message: 'Successfully found stories!',
+    data: {
+      stories,
+      page: pagination.page,
+      perPage: pagination.perPage,
+      totalItems: pagination.totalItems,
+      totalPages: pagination.totalPages,
+      hasNextPage: pagination.hasNextPage,
+      hasPreviousPage: pagination.hasPreviousPage,
+    },
   };
 };
 
