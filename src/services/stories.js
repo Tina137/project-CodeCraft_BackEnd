@@ -46,7 +46,7 @@ export const getStories = async ({
     .populate({ path: "category", select: "name" })
     .exec();
 
-  const paginationData = calculatePaginationData(total, perPage, page);
+  const pagination = calculatePaginationData(total, perPage, page);
 
   return {
     data: stories,
