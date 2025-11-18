@@ -3,7 +3,13 @@ import { HTTP_STATUS } from '../constants/index.js';
 import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 import { getEnvVar } from '../utils/getEnvVar.js';
-import { getStories, createStory, getStoryById, updateStory, deleteStory } from '../services/stories.js';
+import {
+  getStories,
+  createStory,
+  getStoryById,
+  updateStory,
+  deleteStory,
+} from '../services/stories.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 
@@ -13,7 +19,7 @@ export const getStoriesController = async (req, res, next) => {
     const { sortBy, sortOrder } = parseSortParams(req.query);
     const { category, ownerId } = req.query;
 
-    const stories = await getStories({
+    const { data, total, hasNextPage, limit } = await getStories({
       page,
       perPage,
       sortBy,
@@ -24,8 +30,12 @@ export const getStoriesController = async (req, res, next) => {
 
     res.json({
       status: HTTP_STATUS.OK,
-      message: 'Successfully found stories!',
-      data: stories,
+      message: 'Stories fetched successfully',
+      page,
+      limit, // = perPage
+      total, // загальна кількість документів
+      hasNextPage, // true / false
+      data, // масив сторіс
     });
   } catch (error) {
     next(error);

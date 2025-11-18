@@ -32,7 +32,8 @@ export const getStories = async ({
 
   const sortDirection = sortOrder.toLowerCase() === 'desc' ? -1 : 1;
 
-  const storiesCount = await StoryCollection.countDocuments(filter);
+  // 👇 Ось тут твій правильний total
+  const total = await StoryCollection.countDocuments(filter);
 
   const stories = await StoryCollection.find(filter)
     .skip(skip)
@@ -40,16 +41,18 @@ export const getStories = async ({
     .sort({ [sortField]: sortDirection })
     .populate({
       path: 'ownerId',
-      select: 'name avatarUrl',
+      select: 'name avatarUrl articlesAmount description',
     })
     .populate({ path: 'category', select: 'name' })
     .exec();
 
-  const paginationData = calculatePaginationData(storiesCount, perPage, page);
+  const paginationData = calculatePaginationData(total, perPage, page);
 
   return {
     data: stories,
-    ...paginationData,
+    total, // 👈 Додаємо total
+    limit,
+    hasNextPage: paginationData.hasNextPage,
   };
 };
 
