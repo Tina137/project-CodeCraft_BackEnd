@@ -41,7 +41,7 @@ export const getStories = async ({
     .sort({ [sortField]: sortDirection, _id: 1 })
     .populate({
       path: 'ownerId',
-      select: 'name avatarUrl description',
+      select: 'name avatarUrl description articlesAmount',
     })
     .populate({
       path: 'category',
