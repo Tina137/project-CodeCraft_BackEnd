@@ -9,7 +9,7 @@ export const getStories = async ({
   page = 1,
   perPage = 10,
   sortOrder = SORT_ORDER.ASC,
-  sortBy = 'createdAt',
+  sortBy = "favoriteCount",
   category,
   ownerId,
 }) => {
@@ -21,46 +21,36 @@ export const getStories = async ({
   if (ownerId) filter.ownerId = ownerId;
 
   const allowedSortFields = [
-    'title',
-    'article',
-    'category',
-    'ownerId',
-    'favoriteCount',
-    'createdAt',
+    "title",
+    "article",
+    "category",
+    "ownerId",
+    "favoriteCount",
+    "createdAt",
   ];
-  const sortField = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
-
-  const sortDirection = sortOrder.toLowerCase() === 'desc' ? -1 : 1;
+  const sortField = allowedSortFields.includes(sortBy)
+    ? sortBy
+    : "favoriteCount";
+  const sortDirection = sortOrder.toLowerCase() === "asc" ? -1 : 1;
 
   const total = await StoryCollection.countDocuments(filter);
 
   const stories = await StoryCollection.find(filter)
     .skip(skip)
-    .limit(perPage)
-    .sort({ [sortField]: sortDirection, _id: 1 })
+    .limit(limit)
+    .sort({ [sortField]: sortDirection, _id: sortDirection })
     .populate({
-      path: 'ownerId',
-      select: 'name avatarUrl description articlesAmount',
+      path: "ownerId",
+      select: "name avatarUrl articlesAmount description",
     })
-    .populate({
-      path: 'category',
-      select: 'name',
-    });
+    .populate({ path: "category", select: "name" })
+    .exec();
 
   const pagination = calculatePaginationData(total, perPage, page);
 
   return {
-    status: 200,
-    message: 'Successfully found stories!',
-    data: {
-      stories,
-      page: pagination.page,
-      perPage: pagination.perPage,
-      totalItems: pagination.totalItems,
-      totalPages: pagination.totalPages,
-      hasNextPage: pagination.hasNextPage,
-      hasPreviousPage: pagination.hasPreviousPage,
-    },
+    data: stories,
+    ...paginationData,
   };
 };
 
