@@ -65,7 +65,9 @@ export const getStories = async ({
 };
 
 export const getStoryById = async (storyId) => {
-  const story = await StoryCollection.findById(storyId);
+  const story = await StoryCollection.findById(storyId)
+    .populate('ownerId', 'name avatarUrl description articlesAmount')
+    .populate('category', 'name');
 
   if (!story) throw createHttpError(404, 'Story not found');
   return story;
