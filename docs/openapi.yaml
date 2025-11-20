@@ -26,6 +26,9 @@ components:
       $ref: '../swagger/components/schemas/user.yaml'
     story:
       $ref: '../swagger/components/schemas/story.yaml'
+    category:
+      $ref: '../swagger/components/schemas/category.yaml'
+
   responses:
     '200':
       $ref: '../swagger/components/responses/200.yaml'
@@ -87,3 +90,7 @@ paths:
       $ref: '../swagger/paths/stories/{storyId}/patch.yaml'
     delete:
       $ref: '../swagger/paths/stories/{storyId}/delete.yaml'
+
+  /categories:
+    get:
+      $ref: '../swagger/paths/categories/get.yaml'
