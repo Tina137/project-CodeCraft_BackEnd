@@ -1,0 +1,28 @@
+summary: Get list of categories
+description: Retrieves all available categories sorted alphabetically by name. Doesn't require authentication.
+operationId: getCategories
+tags:
+  - Categories
+security: []
+responses:
+  '200':
+    description: Successfully fetched categories
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully fetched categories!
+            data:
+              type: array
+              items:
+                $ref: '../../components/schemas/category.yaml'
+  '400':
+    $ref: '../../components/responses/400.yaml'
+  '500':
+    $ref: '../../components/responses/500.yaml'

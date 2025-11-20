@@ -1,0 +1,13 @@
+type: object
+required:
+  - _id
+  - name
+properties:
+  _id:
+    type: string
+    description: Unique identifier for the category, generated automatically by MongoDB
+    example: '68fb50c80ae91338641121f0'
+  name:
+    type: string
+    description: Category name
+    example: 'Азія'
