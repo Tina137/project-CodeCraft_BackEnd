@@ -1,6 +1,5 @@
 import { StoryCollection } from '../db/models/stories.js';
 import { UsersCollection } from '../db/models/user.js';
-import { CategoriesCollection } from '../db/models/categoory.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 import { SORT_ORDER } from '../constants/index.js';
 import createHttpError from 'http-errors';

@@ -8,10 +8,12 @@ import {
   addSavedStoryController,
   removeSavedStoryController,
   updateUserProfileController,
-  getUserByIdController,
   updateAvatarController,
 } from '../controllers/users.js';
-import { getUsersListController } from '../controllers/publicUsers.js';
+import {
+  getUsersListController,
+  getPublicUserByIdController,
+} from '../controllers/publicUsers.js';
 import { updateUserSchema } from '../validation/users.js';
 import { upload } from '../middlewares/multer.js';
 
@@ -21,7 +23,7 @@ router.get('/', ctrlWrapper(getUsersListController));
 
 router.get('/current', authenticate, ctrlWrapper(getCurrentUserController));
 
-router.get('/:userId', isValidId, ctrlWrapper(getUserByIdController));
+router.get('/:userId', isValidId, ctrlWrapper(getPublicUserByIdController));
 
 router.patch(
   '/updateUser',
